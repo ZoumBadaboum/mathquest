@@ -9,12 +9,20 @@
 body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}
 #app{max-width:1000px;margin:0 auto;padding:76px 16px 16px}#app.n{max-width:560px}
 #top{display:none;position:fixed;top:0;left:0;right:0;z-index:10;align-items:center;gap:10px;background:var(--card);border-bottom:2px solid var(--ink);padding:8px 12px}
-#top nav{display:flex;gap:2px;margin-left:auto}
+#top nav{display:flex;gap:6px;margin-left:auto}
 .tb{font:inherit;background:none;border:0;color:var(--ink);cursor:pointer;padding:6px;border-radius:8px;font-size:1rem;white-space:nowrap}.tb:hover,.tb:focus-visible{background:var(--hl);color:#1c2340;outline:0}
-.tb b{display:block;max-width:100px;overflow:hidden;text-overflow:ellipsis}
-.lv{width:90px;font-size:.8rem}.lv .bar{height:8px}.lb{display:none}
+.tb b{display:block;max-width:80px;overflow:hidden;text-overflow:ellipsis}
+.lv{width:60px;font-size:.8rem}.lv .bar{height:8px}.lb{display:none}
 @media(min-width:700px){.lb{display:inline}.lv{width:160px}.tb b{max-width:220px}}
 .hs{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6px 12px 0}.hs .card{flex:0 0 min(300px,82%);scroll-snap-align:start;margin:8px 0}
+.nb{font:inherit;font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:6px 9px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.nb .ic{font-size:1.15rem;line-height:1}.nb.pri{background:var(--blue);color:#fff}
+.nb:hover,.nb:focus-visible{background:var(--hl);color:#1c2340;outline:0}.nb.out:hover,.nb.out:focus-visible{background:var(--ko);color:#fff}
+.nb:active{transform:translate(2px,2px);box-shadow:none}
+.ch{display:flex;flex-direction:column;gap:6px}.ch .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr{display:flex;align-items:center;gap:8px}.pr .bar{flex:1}.pr span{font-size:.85rem;min-width:2.8em;text-align:right}
+.st{min-height:3.4em}.st>div{margin:0!important}
+.acts{display:flex;gap:6px;margin-top:auto}.acts .btn{flex:1;margin:0;padding:10px 6px;white-space:nowrap}
 .lock{opacity:.55;border-style:dashed;box-shadow:none;text-align:center}
 footer{margin:28px 0 8px;text-align:center;font-size:.8rem;color:var(--mut)}.lnk{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
@@ -57,7 +65,7 @@ async function boot(){
   if(me&&await login(me.pseudo,me.pin,true))return;
   loginView();
 }
-function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Pythagore"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="1234"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
+function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Gauss"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="ex : 0000"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
   window.go=async()=>{const ps=ps_.value.trim(),pn=pn_.value.trim();if(!ps)return loginView('Choisis un pseudo.');const h=pn?await sha(ps.toLowerCase()+pn):'';if(!await login(ps,h))loginView(window.lastErr?'Erreur serveur : '+window.lastErr:'PIN incorrect.')}
   window.ps_=document.getElementById('ps');window.pn_=document.getElementById('pn');
 }
@@ -74,16 +82,16 @@ function prog(ch){const c=ALL.filter(x=>x.ch===ch);return Math.round(c.reduce((a
 function resume(){const s=P.progression._s;ev=s.ev;ALL.forEach(c=>c.again=0);const seen={};Q=s.ids.map(id=>{const c=ALL.find(x=>x.id===id);if(c&&seen[id])c.again=1;seen[id]=1;return c}).filter(Boolean);Q.ch=s.ch;qi=s.qi;combo=s.combo;gained=s.gained;good=s.good;qview()}
 function bar(){const t=document.getElementById('top');if(!P){t.style.display='none';t.innerHTML='';return}
   const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);t.style.display='flex';
-  t.innerHTML=`<button class="tb" onclick="home()" aria-label="Accueil"><b>Salut ${esc(P.pseudo)}</b></button><div class="lv"><b>Niv. ${l}</b><div class="bar"><i style="width:${pc}%"></i></div></div><nav><button class="tb" onclick="evalStart('all')" title="Éval" aria-label="Éval">✎<span class="lb"> EVAL</span></button><button class="tb" onclick="board('semaine')" title="Classement" aria-label="Classement">🏆<span class="lb"> Classement</span></button><button class="tb" onclick="out()" title="Déconnexion" aria-label="Déconnexion">⎋<span class="lb"> Déconnexion</span></button></nav>`}
+  t.innerHTML=`<button class="tb" onclick="home()" aria-label="Accueil"><b>Salut ${esc(P.pseudo)}</b></button><div class="lv"><b>Niv. ${l}</b><div class="bar"><i style="width:${pc}%"></i></div></div><nav><button class="nb pri" onclick="evalStart('all')" title="Éval" aria-label="Éval"><span class="ic">🎓</span><span class="lb">EVAL</span></button><button class="nb" onclick="board('semaine')" title="Classement" aria-label="Classement"><span class="ic">🏆</span><span class="lb">Classement</span></button><button class="nb out" onclick="out()" title="Déconnexion" aria-label="Déconnexion"><span class="ic">🚪</span><span class="lb">Déconnexion</span></button></nav>`}
 function home(){bar();
   const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'';
   R(`${sv}<div class="card"><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span>${stats('all')}</div>
   <div class="row"><h2>Flash cards</h2><button class="btn alt" onclick="rev('all')">Tout réviser</button></div>
-  <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées · ${prog(p.id)} % de progression</div><div class="bar" style="margin:8px 0"><i style="width:${prog(p.id)}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}</div>
+  <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card ch"><b class="t">${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} maîtrisées</div><div class="pr"><div class="bar"><i style="width:${prog(p.id)}%"></i></div><span>${prog(p.id)} %</span></div><div class="st">${stats(p.id)||'<div class="mut">Pas encore d\'éval</div>'}</div><div class="acts"><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div></div>`}).join('')}</div>
   <h2>Exo express</h2><div class="card lock">🔒 Section à venir</div>
   <h2>Exos types bac</h2><div class="card lock">🔒 Section à venir</div>
   <footer>MathQuest · <button class="lnk" onclick="legal()">Crédits et mentions légales</button></footer>`,1)}
-function legal(){R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Crédits et mentions légales</h2><div class="card"><p><b>Éditeur :</b> [À COMPLÉTER : nom ou pseudonyme, contact]</p><p><b>Contenu des cours :</b> [À COMPLÉTER : auteur du cours, établissement]</p><p><b>Hébergement du site :</b> GitHub Pages (GitHub, Inc., San Francisco, États-Unis). <b>Base de données :</b> Supabase.</p><p><b>Données collectées :</b> uniquement ton pseudo, ton PIN (stocké haché), ton XP, tes scores et ta progression. Aucun nom, e-mail ni cookie publicitaire. Ton pseudo est mémorisé dans le stockage local de ton navigateur pour te reconnecter. N'utilise pas ton vrai nom.</p><p><b>Suppression :</b> pour effacer ton compte, contacte l'éditeur : [À COMPLÉTER].</p></div>`)}
+function legal(){R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Crédits et mentions légales</h2><div class="card"><p><b>Éditeur :</b> ZoumB</p><p><b>Contenu des cours :</b> Merci à M. K pour les cours</p><p><b>Hébergement du site :</b> GitHub Pages (GitHub, Inc., San Francisco, États-Unis). <b>Base de données :</b> Supabase.</p><p><b>Données collectées :</b> uniquement ton pseudo, ton PIN (stocké haché), ton XP, tes scores et ta progression. Aucun nom, e-mail ni cookie publicitaire. Ton pseudo est mémorisé dans le stockage local de ton navigateur pour te reconnecter. N'utilise pas ton vrai nom.</p><p><b>Suppression :</b> pour effacer ton compte, contacte l'éditeur.</p></div>`)}
 // ---- Consultation
 let ci=0,cl=[],flipped=false;
 function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
