@@ -83,10 +83,10 @@ function resume(){const s=P.progression._s;ev=s.ev;ALL.forEach(c=>c.again=0);con
 function bar(){const t=document.getElementById('top');if(!P){t.style.display='none';t.innerHTML='';return}
   const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);t.style.display='flex';
   t.innerHTML=`<button class="tb" onclick="home()" aria-label="Accueil"><b>Salut ${esc(P.pseudo)}</b></button><div class="lv"><b>Niv. ${l}</b><div class="bar"><i style="width:${pc}%"></i></div></div><nav><button class="nb pri" onclick="evalStart('all')" title="Éval" aria-label="Éval"><span class="ic">🎓</span><span class="lb">EVAL</span></button><button class="nb" onclick="board('semaine')" title="Classement" aria-label="Classement"><span class="ic">🏆</span><span class="lb">Classement</span></button><button class="nb out" onclick="out()" title="Déconnexion" aria-label="Déconnexion"><span class="ic">🚪</span><span class="lb">Déconnexion</span></button></nav>`}
-function home(){bar();
+function home(){bar();const due=ALL.filter(c=>!P.progression[c.id]||P.progression[c.id].due<=day()).length;
   const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'';
   R(`${sv}<div class="card"><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span>${stats('all')}</div>
-  <div class="row"><h2>Flash cards</h2><button class="btn alt" onclick="rev('all')">Tout réviser</button></div>
+  <div class="row"><h2>Flash cards</h2>${due?`<button class="btn" onclick="rev('all')">Révision du jour · ${due} à revoir</button>`:''}</div>
   <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card ch"><b class="t">${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} maîtrisées</div><div class="pr"><div class="bar"><i style="width:${prog(p.id)}%"></i></div><span>${prog(p.id)} %</span></div><div class="st">${stats(p.id)||'<div class="mut">Pas encore d\'éval</div>'}</div><div class="acts"><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div></div>`}).join('')}</div>
   <h2>Exo express</h2><div class="card lock">🔒 Section à venir</div>
   <h2>Exos types bac</h2><div class="card lock">🔒 Section à venir</div>

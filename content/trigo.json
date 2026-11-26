@@ -6,4 +6,15 @@
 {"id":"5","d":2,"q":"Définition du radian ?","a":"Mesure d'un angle au centre qui intercepte un arc de longueur $1$","p":["Mesure d'un angle au centre qui intercepte un arc de longueur $\\pi$","Mesure d'un angle au centre qui intercepte un arc de longueur $2\\pi$","Mesure d'un angle de $1^\\circ$"]},
 {"id":"6","d":1,"q":"$180^\\circ$ en radians ?","a":"$\\pi$","p":["$2\\pi$","$\\dfrac{\\pi}{2}$","$\\dfrac{\\pi}{4}$"],"t":["pi"]},
 {"id":"7","d":1,"q":"$60^\\circ$ en radians ?","a":"$\\dfrac{\\pi}{3}$","p":["$\\dfrac{\\pi}{6}$","$\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{2}$"],"t":["pi/3"]},
-{"id":"8","d":3,"q":"Mesure principale de $\\dfrac{27\\pi}{4}$ ?","a":"$\\dfrac{3\\pi}{4}$","p":["$\\dfrac{7\\pi}{4}$","$-\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{4}$"],"t":["3pi/4"]}]}
+{"id":"8","d":3,"q":"Mesure principale de $\\dfrac{27\\pi}{4}$ ?","a":"$\\dfrac{3\\pi}{4}$","p":["$\\dfrac{7\\pi}{4}$","$-\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{4}$"],"t":["3pi/4"]},
+{"id":"9","d":1,"q":"Comment associe-t-on un réel $m$ à un point du cercle ?","a":"Par enroulement de la droite numérique autour du cercle","p":["En divisant $m$ par $2\\pi$","En traçant la tangente en $I$","En prenant $m$ comme rayon du cercle"]},
+{"id":"10","d":1,"q":"Combien de points du cercle sont associés à un réel $m$ donné ?","a":"Un seul : son point image","p":["Deux","Une infinité","Aucun si $m>2\\pi$"],"t":["1","un"]},
+{"id":"11","d":2,"q":"Comment trouve-t-on la mesure principale d'un angle $x$ ?","a":"On cherche $\\alpha\\in]-\\pi;\\pi]$ et $k\\in\\mathbb{Z}$ tels que $x=\\alpha+2k\\pi$","p":["On cherche $\\alpha\\in[0;2\\pi[$ tel que $x=\\alpha+k\\pi$","On divise $x$ par $2\\pi$","On calcule $x-\\pi$"]},
+{"id":"12","d":3,"q":"Pour $\\dfrac{27\\pi}{4}=\\alpha+k\\times\\dfrac{8\\pi}{4}$, quel entier $k$ choisit-on ?","a":"$k=3$, car $3\\times8=24$ est le multiple de 8 le plus proche de 27","p":["$k=4$","$k=2$","$k=8$"],"t":["3","k=3"]},
+{"id":"13","d":1,"q":"La mesure d'un angle en radian et sa mesure en degré sont...","a":"Proportionnelles","p":["Égales","Inversement proportionnelles","Indépendantes"]},
+{"id":"14","d":1,"q":"$30^\\circ$ en radians ?","a":"$\\dfrac{\\pi}{6}$","p":["$\\dfrac{\\pi}{3}$","$\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{2}$"],"t":["pi/6"]},
+{"id":"15","d":1,"q":"$45^\\circ$ en radians ?","a":"$\\dfrac{\\pi}{4}$","p":["$\\dfrac{\\pi}{6}$","$\\dfrac{\\pi}{3}$","$\\dfrac{\\pi}{2}$"],"t":["pi/4"]},
+{"id":"16","d":1,"q":"$90^\\circ$ en radians ?","a":"$\\dfrac{\\pi}{2}$","p":["$\\pi$","$\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{3}$"],"t":["pi/2"]},
+{"id":"17","d":1,"q":"$360^\\circ$ en radians ?","a":"$2\\pi$","p":["$\\pi$","$4\\pi$","$\\dfrac{\\pi}{2}$"],"t":["2pi"]},
+{"id":"18","d":2,"q":"Pour convertir $\\alpha$ degrés en radians, on calcule","a":"$\\alpha\\times\\dfrac{\\pi}{180}$","p":["$\\alpha\\times\\dfrac{180}{\\pi}$","$\\alpha\\times\\dfrac{\\pi}{360}$","$\\alpha\\times2\\pi$"]},
+{"id":"19","d":2,"q":"$\\dfrac{\\pi}{3}$ radians en degrés ?","a":"$60^\\circ$","p":["$30^\\circ$","$45^\\circ$","$90^\\circ$"],"t":["60","60°"]}]}
