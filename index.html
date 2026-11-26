@@ -59,12 +59,14 @@ async function login(ps,h,silent){
   localStorage.me=JSON.stringify({pseudo:ps,pin:h});await save();home();return true
 }
 function out(){localStorage.removeItem('me');P=null;loginView()}
-function mastered(ch){return ALL.filter(c=>c.ch===ch&&(P.progression[c.id]?.b||0)>=4).length}
+function mastered(ch){return ALL.filter(c=>c.ch===ch&&(P.progression[c.id]?.b||0)>=3).length}
+function prog(ch){const c=ALL.filter(x=>x.ch===ch);return Math.round(c.reduce((a,x)=>a+Math.min(3,P.progression[x.id]?.b||0),0)/(3*c.length)*100)}
+function resume(){const s=P.progression._s;ev=s.ev;ALL.forEach(c=>c.again=0);const seen={};Q=s.ids.map(id=>{const c=ALL.find(x=>x.id===id);if(c&&seen[id])c.again=1;seen[id]=1;return c}).filter(Boolean);Q.ch=s.ch;qi=s.qi;combo=s.combo;gained=s.gained;good=s.good;qview()}
 function home(){
-  const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);
+  const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'',l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);
   R(`<div class="row"><h1>Salut ${P.pseudo.replace(/[<&]/g,'')}</h1><button class="btn alt" onclick="out()">Quitter</button></div>
   <div class="card"><div class="row"><b>Niveau ${l}</b><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span></div><div class="bar"><i style="width:${pc}%"></i></div>${stats('all')}</div>
-  ${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées</div><div class="bar" style="margin:8px 0"><i style="width:${mastered(p.id)/n*100}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}
+  ${sv}${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées · ${prog(p.id)} % de progression</div><div class="bar" style="margin:8px 0"><i style="width:${prog(p.id)}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}
   <button class="btn" onclick="rev('all')">Tout réviser</button><button class="btn alt" onclick="evalStart('all')">Tout évaluer</button><button class="btn alt" onclick="board('semaine')">Classement</button>`)
 }
 // ---- Consultation
@@ -73,7 +75,7 @@ function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
 function cview(){const c=cl[ci];R(`<button class="btn alt" onclick="home()">← Retour</button><p class="mut">Carte ${ci+1}/${cl.length} · difficulté ${'★'.repeat(c.d)}</p><div class="card flip pop" onclick="flipped=!flipped;cview()">${flipped?c.a:'<span class="q">'+c.q+'</span>'}</div><p class="mut">Touche la carte pour la retourner.</p><button class="btn alt" onclick="ci=(ci+cl.length-1)%cl.length;flipped=false;cview()">Précédente</button><button class="btn" onclick="ci=(ci+1)%cl.length;flipped=false;cview()">Suivante</button>`)}
 // ---- Révision
 function rev(ch){ev=false;ALL.forEach(c=>c.again=0);const t=day(),pool=ALL.filter(c=>ch==='all'||c.ch===ch),due=pool.filter(c=>!P.progression[c.id]||P.progression[c.id].due<=t);
-  Q=shuf(due.length?due:pool).slice(0,10);qi=0;combo=0;gained=0;good=0;if(!due.length)alert('Rien à réviser aujourd\'hui : mode libre !');qview()}
+  Q=shuf(due.length?due:pool).slice(0,10);Q.ch=ch;delete P.progression._s;qi=0;combo=0;gained=0;good=0;if(!due.length)alert('Rien à réviser aujourd\'hui : mode libre !');qview()}
 function qview(){
   if(qi>=Q.length)return end();
   cur=Q[qi];const c=cur;cur.opts=shuf([c.a,...c.p.slice(0,3)]);
@@ -89,17 +91,17 @@ function done(ok,ty){
   else{const s=P.progression[cur.id]||{b:0};
     if(ok){combo++;xp=Math.round(10*cur.d*(ty?1.5:1)*Math.min(2,1+.1*(combo-1)));s.b=Math.min(5,s.b+1);good++}else{combo=0;s.b=Math.max(0,s.b-1);if(!cur.again){cur.again=1;Q.push(cur)}}
     s.due=day()+[0,1,2,4,8,16][s.b];P.progression[cur.id]=s}
-  P.xp+=xp;P.xp_semaine+=xp;gained+=xp;save();
+  P.xp+=xp;P.xp_semaine+=xp;gained+=xp;P.progression._s={ev,ch:Q.ch,ids:Q.map(c=>c.id),qi:qi+1,combo,gained,good};save();
   const fb=document.getElementById('fb');fb.innerHTML=`<div class="card pop"><b class="${ok?'':'err'}">${ok?'Juste !':'Pas tout à fait.'}</b> <span class="hl">+${xp} XP</span>${ok?'':`<p>Réponse : ${cur.a}</p>`}<button class="btn" onclick="qi++;qview()">Suivant</button></div>`;renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false}],throwOnError:false})
 }
-function end(){
+function end(){delete P.progression._s;save();
   if(!ev)return R(`<h1>Séance terminée</h1><div class="card pop"><p><span class="hl">+${gained} XP</span></p><p>${good} bonnes réponses sur ${Q.length}.</p><button class="btn" onclick="home()">Accueil</button><button class="btn alt" onclick="board('semaine')">Classement</button></div>`);
   const pc=Math.round(good/Q.length*100),L=P.progression._ev=P.progression._ev||[];L.push({c:Q.ch,s:pc,t:Date.now()});if(L.length>50)L.shift();save();
   R(`<h1>Éval terminée</h1><div class="card pop"><p><span class="sc" style="background:${col(pc)}">${pc}%</span> &nbsp;${good}/${Q.length} · <span class="hl">+${gained} XP</span></p><button class="btn" onclick="evalStart('${Q.ch}')">Refaire une éval</button><button class="btn alt" onclick="home()">Accueil</button></div>`)
 }
 // ---- Éval (QCM uniquement, rejouable, sans effet sur la répétition espacée)
 const col=p=>`hsl(${Math.round(p*1.2)},62%,36%)`;
-function evalStart(ch){ev=true;Q=shuf(ALL.filter(c=>ch==='all'||c.ch===ch)).slice(0,10);Q.ch=ch;qi=0;combo=0;gained=0;good=0;qview()}
+function evalStart(ch){ev=true;Q=shuf(ALL.filter(c=>ch==='all'||c.ch===ch)).slice(0,10);Q.ch=ch;delete P.progression._s;qi=0;combo=0;gained=0;good=0;qview()}
 function stats(ch){const L=(P.progression._ev||[]).filter(e=>ch==='all'||e.c===ch);if(!L.length)return'';const best=Math.max(...L.map(e=>e.s)),l5=L.slice(-5),avg=Math.round(l5.reduce((a,e)=>a+e.s,0)/l5.length);
   return `<div class="mut" style="margin:6px 0">Éval · meilleur <span class="sc" style="background:${col(best)}">${best}%</span> · moyenne des ${l5.length} derniers <span class="sc" style="background:${col(avg)}">${avg}%</span></div>`}
 // ---- Classement
