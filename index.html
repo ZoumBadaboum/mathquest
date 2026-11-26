@@ -18,7 +18,7 @@ input{font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;b
 .opt{display:block;width:100%;text-align:left;font:inherit;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:12px;margin:8px 0;cursor:pointer}
 .opt.ok{background:var(--ok);color:#fff}.opt.ko{background:var(--ko);color:#fff}
 .q{font-size:1.15rem;font-weight:600;margin:6px 0 12px}.flip{cursor:pointer;min-height:140px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem}
-.hl{background:var(--hl);color:#1c2340;padding:1px 6px;border-radius:4px;font-weight:700}.err{color:var(--ko);font-weight:600}
+.sc{color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}.hl{background:var(--hl);color:#1c2340;padding:1px 6px;border-radius:4px;font-weight:700}.err{color:var(--ko);font-weight:600}
 td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.me{background:var(--hl);color:#1c2340}
 @media(prefers-reduced-motion:no-preference){.pop{animation:p .3s}@keyframes p{from{transform:scale(.9)}}}
 </style></head><body><div id="app">Chargement…</div>
@@ -35,9 +35,9 @@ const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new T
 const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const norm=s=>s.toLowerCase().replace(/\s|\\/g,'').replace(/π/g,'pi').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/[×·]/g,'*').replace(/δ/g,'delta');
 const R=h=>{A.innerHTML=h;renderMathInElement(A,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})};
-let P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
+let ev=false,P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
 
-async function api(path,m='GET',b,h={}){const r=await fetch(SB.url+'/rest/v1/'+path,{method:m,body:b&&JSON.stringify(b),headers:{apikey:SB.key,...(SB.key.startsWith('eyJ')?{Authorization:'Bearer '+SB.key}:{}),'Content-Type':'application/json',...h}});if(!r.ok)throw 0;return r.status===204?null:r.json().catch(()=>null)}
+async function api(path,m='GET',b,h={}){const r=await fetch(SB.url+'/rest/v1/'+path,{method:m,body:b&&JSON.stringify(b),headers:{apikey:SB.key,...(SB.key.startsWith('eyJ')?{Authorization:'Bearer '+SB.key}:{}),'Content-Type':'application/json',...h}});if(!r.ok)throw new Error(r.status+' '+await r.text());return r.status===204?null:r.json().catch(()=>null)}
 async function save(){try{if(SB.url)await api('joueurs','POST',P,{Prefer:'resolution=merge-duplicates'});else localStorage['p_'+P.pseudo]=JSON.stringify(P)}catch{}}
 
 async function boot(){
@@ -48,12 +48,12 @@ async function boot(){
   loginView();
 }
 function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Pythagore"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="1234"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
-  window.go=async()=>{const ps=ps_.value.trim(),pn=pn_.value.trim();if(!ps)return loginView('Choisis un pseudo.');const h=pn?await sha(ps.toLowerCase()+pn):'';if(!await login(ps,h))loginView('PIN incorrect ou serveur injoignable.')}
+  window.go=async()=>{const ps=ps_.value.trim(),pn=pn_.value.trim();if(!ps)return loginView('Choisis un pseudo.');const h=pn?await sha(ps.toLowerCase()+pn):'';if(!await login(ps,h))loginView(window.lastErr?'Erreur serveur : '+window.lastErr:'PIN incorrect.')}
   window.ps_=document.getElementById('ps');window.pn_=document.getElementById('pn');
 }
 async function login(ps,h,silent){
   let row=null;
-  try{row=SB.url?(await api('joueurs?pseudo=eq.'+encodeURIComponent(ps)+'&select=*'))[0]:JSON.parse(localStorage['p_'+ps]||'null')}catch{return false}
+  try{row=SB.url?(await api('joueurs?pseudo=eq.'+encodeURIComponent(ps)+'&select=*'))[0]:JSON.parse(localStorage['p_'+ps]||'null')}catch(e){window.lastErr=String(e.message||e);return false}
   if(row){if(row.pin&&row.pin!==h)return false;P=row}else P={pseudo:ps,pin:h,xp:0,xp_semaine:0,semaine:wk(),progression:{}};
   if(P.semaine!==wk()){P.semaine=wk();P.xp_semaine=0}
   localStorage.me=JSON.stringify({pseudo:ps,pin:h});await save();home();return true
@@ -63,33 +63,45 @@ function mastered(ch){return ALL.filter(c=>c.ch===ch&&(P.progression[c.id]?.b||0
 function home(){
   const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);
   R(`<div class="row"><h1>Salut ${P.pseudo.replace(/[<&]/g,'')}</h1><button class="btn alt" onclick="out()">Quitter</button></div>
-  <div class="card"><div class="row"><b>Niveau ${l}</b><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span></div><div class="bar"><i style="width:${pc}%"></i></div></div>
-  ${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées</div><div class="bar" style="margin:8px 0"><i style="width:${mastered(p.id)/n*100}%"></i></div><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button></div>`}).join('')}
-  <button class="btn" onclick="rev('all')">Tout réviser</button><button class="btn alt" onclick="board('semaine')">Classement</button>`)
+  <div class="card"><div class="row"><b>Niveau ${l}</b><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span></div><div class="bar"><i style="width:${pc}%"></i></div>${stats('all')}</div>
+  ${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées</div><div class="bar" style="margin:8px 0"><i style="width:${mastered(p.id)/n*100}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}
+  <button class="btn" onclick="rev('all')">Tout réviser</button><button class="btn alt" onclick="evalStart('all')">Tout évaluer</button><button class="btn alt" onclick="board('semaine')">Classement</button>`)
 }
 // ---- Consultation
 let ci=0,cl=[],flipped=false;
 function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
 function cview(){const c=cl[ci];R(`<button class="btn alt" onclick="home()">← Retour</button><p class="mut">Carte ${ci+1}/${cl.length} · difficulté ${'★'.repeat(c.d)}</p><div class="card flip pop" onclick="flipped=!flipped;cview()">${flipped?c.a:'<span class="q">'+c.q+'</span>'}</div><p class="mut">Touche la carte pour la retourner.</p><button class="btn alt" onclick="ci=(ci+cl.length-1)%cl.length;flipped=false;cview()">Précédente</button><button class="btn" onclick="ci=(ci+1)%cl.length;flipped=false;cview()">Suivante</button>`)}
 // ---- Révision
-function rev(ch){const t=day(),pool=ALL.filter(c=>ch==='all'||c.ch===ch),due=pool.filter(c=>!P.progression[c.id]||P.progression[c.id].due<=t);
+function rev(ch){ev=false;ALL.forEach(c=>c.again=0);const t=day(),pool=ALL.filter(c=>ch==='all'||c.ch===ch),due=pool.filter(c=>!P.progression[c.id]||P.progression[c.id].due<=t);
   Q=shuf(due.length?due:pool).slice(0,10);qi=0;combo=0;gained=0;good=0;if(!due.length)alert('Rien à réviser aujourd\'hui : mode libre !');qview()}
 function qview(){
   if(qi>=Q.length)return end();
   cur=Q[qi];const c=cur;cur.opts=shuf([c.a,...c.p.slice(0,3)]);
-  R(`<div class="row"><button class="btn alt" onclick="home()">Quitter</button><span class="mut">${qi+1}/${Q.length} · combo ×${Math.min(2,1+.1*combo).toFixed(1)}</span></div>
+  R(`<div class="row"><button class="btn alt" onclick="home()">Quitter</button><span class="mut">${qi+1}/${Q.length} · ${ev?'éval':'combo ×'+Math.min(2,1+.1*combo).toFixed(1)}</span></div>
   <div class="card pop"><div class="q">${c.q}</div>${cur.opts.map((o,i)=>`<button class="opt" onclick="pick(${i})">${o}</button>`).join('')}
-  ${c.t?`<hr><span class="mut">Ou tape ta réponse (XP ×1,5)</span><input id="ty" autocomplete="off" onkeydown="if(event.key==='Enter')typed()"><button class="btn" onclick="typed()">Valider</button>`:''}</div><div id="fb"></div>`)
+  ${c.t&&!ev?`<hr><span class="mut">Ou tape ta réponse (XP ×1,5)</span><input id="ty" autocomplete="off" onkeydown="if(event.key==='Enter')typed()"><button class="btn" onclick="typed()">Valider</button>`:''}</div><div id="fb"></div>`)
 }
 function pick(i){const ok=cur.opts[i]===cur.a;document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(cur.opts[j]===cur.a)b.classList.add('ok');else if(j===i)b.classList.add('ko')});done(ok,false)}
 function typed(){const v=norm(document.getElementById('ty').value);if(!v)return;document.querySelectorAll('.opt,.btn').forEach(b=>b.disabled=b.classList.contains('alt')?false:true);done(cur.t.some(x=>norm(x)===v),true)}
 function done(ok,ty){
-  const s=P.progression[cur.id]||{b:0};let xp=2;
-  if(ok){combo++;xp=Math.round(10*cur.d*(ty?1.5:1)*Math.min(2,1+.1*(combo-1)));s.b=Math.min(5,s.b+1);good++}else{combo=0;s.b=Math.max(0,s.b-1);if(!cur.again){cur.again=1;Q.push(cur)}}
-  s.due=day()+[0,1,2,4,8,16][s.b];P.progression[cur.id]=s;P.xp+=xp;P.xp_semaine+=xp;gained+=xp;save();
+  let xp=2;
+  if(ev){xp=ok?5*cur.d:0;if(ok)good++}
+  else{const s=P.progression[cur.id]||{b:0};
+    if(ok){combo++;xp=Math.round(10*cur.d*(ty?1.5:1)*Math.min(2,1+.1*(combo-1)));s.b=Math.min(5,s.b+1);good++}else{combo=0;s.b=Math.max(0,s.b-1);if(!cur.again){cur.again=1;Q.push(cur)}}
+    s.due=day()+[0,1,2,4,8,16][s.b];P.progression[cur.id]=s}
+  P.xp+=xp;P.xp_semaine+=xp;gained+=xp;save();
   const fb=document.getElementById('fb');fb.innerHTML=`<div class="card pop"><b class="${ok?'':'err'}">${ok?'Juste !':'Pas tout à fait.'}</b> <span class="hl">+${xp} XP</span>${ok?'':`<p>Réponse : ${cur.a}</p>`}<button class="btn" onclick="qi++;qview()">Suivant</button></div>`;renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false}],throwOnError:false})
 }
-function end(){R(`<h1>Séance terminée</h1><div class="card pop"><p><span class="hl">+${gained} XP</span></p><p>${good} bonnes réponses sur ${Q.length}.</p><button class="btn" onclick="home()">Accueil</button><button class="btn alt" onclick="board('semaine')">Classement</button></div>`)}
+function end(){
+  if(!ev)return R(`<h1>Séance terminée</h1><div class="card pop"><p><span class="hl">+${gained} XP</span></p><p>${good} bonnes réponses sur ${Q.length}.</p><button class="btn" onclick="home()">Accueil</button><button class="btn alt" onclick="board('semaine')">Classement</button></div>`);
+  const pc=Math.round(good/Q.length*100),L=P.progression._ev=P.progression._ev||[];L.push({c:Q.ch,s:pc,t:Date.now()});if(L.length>50)L.shift();save();
+  R(`<h1>Éval terminée</h1><div class="card pop"><p><span class="sc" style="background:${col(pc)}">${pc}%</span> &nbsp;${good}/${Q.length} · <span class="hl">+${gained} XP</span></p><button class="btn" onclick="evalStart('${Q.ch}')">Refaire une éval</button><button class="btn alt" onclick="home()">Accueil</button></div>`)
+}
+// ---- Éval (QCM uniquement, rejouable, sans effet sur la répétition espacée)
+const col=p=>`hsl(${Math.round(p*1.2)},62%,36%)`;
+function evalStart(ch){ev=true;Q=shuf(ALL.filter(c=>ch==='all'||c.ch===ch)).slice(0,10);Q.ch=ch;qi=0;combo=0;gained=0;good=0;qview()}
+function stats(ch){const L=(P.progression._ev||[]).filter(e=>ch==='all'||e.c===ch);if(!L.length)return'';const best=Math.max(...L.map(e=>e.s)),l5=L.slice(-5),avg=Math.round(l5.reduce((a,e)=>a+e.s,0)/l5.length);
+  return `<div class="mut" style="margin:6px 0">Éval · meilleur <span class="sc" style="background:${col(best)}">${best}%</span> · moyenne des ${l5.length} derniers <span class="sc" style="background:${col(avg)}">${avg}%</span></div>`}
 // ---- Classement
 async function board(t){
   if(!SB.url)return R(`<button class="btn alt" onclick="home()">← Retour</button><div class="card">Le classement s'active quand Supabase est configuré (voir README).</div>`);
