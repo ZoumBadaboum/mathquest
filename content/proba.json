@@ -1,0 +1,10 @@
+{"id":"pr","titre":"Probabilités conditionnelles","niveau":"1ère Spé","cartes":[
+{"id":"1","d":1,"q":"Définition de $P_A(B)$ (avec $P(A)\\neq0$) ?","a":"$P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$","p":["$P_A(B)=\\dfrac{P(A\\cap B)}{P(B)}$","$P_A(B)=\\dfrac{P(A)}{P(A\\cap B)}$","$P_A(B)=P(A)\\times P(B)$"]},
+{"id":"2","d":1,"q":"Expression de $P(A\\cap B)$ avec une probabilité conditionnelle ?","a":"$P(A\\cap B)=P_A(B)\\times P(A)$","p":["$P(A\\cap B)=P_A(B)+P(A)$","$P(A\\cap B)=\\dfrac{P_A(B)}{P(A)}$","$P(A\\cap B)=P_A(B)\\times P(B)$"]},
+{"id":"3","d":2,"q":"Quand des événements $A_1,\\dots,A_n$ forment-ils une partition de $\\Omega$ ?","a":"De probabilités non nulles, deux à deux incompatibles, et d'union $\\Omega$","p":["Deux à deux indépendants, et d'union $\\Omega$","Incompatibles, et d'intersection $\\Omega$","Indépendants, et de probabilité $\\frac{1}{2}$ chacun"]},
+{"id":"4","d":1,"q":"Quelle paire forme toujours une partition de $\\Omega$ (probabilités non nulles) ?","a":"$A$ et $\\bar{A}$","p":["$A$ et $B$","$A$ et $A\\cap B$","$A\\cup B$ et $B$"]},
+{"id":"5","d":3,"q":"Formule des probabilités totales, avec $A_1,\\dots,A_n$ partition de $\\Omega$ ?","a":"$P(B)=P_{A_1}(B)P(A_1)+\\dots+P_{A_n}(B)P(A_n)$","p":["$P(B)=P(A_1)+\\dots+P(A_n)$","$P(B)=P_{B}(A_1)P(A_1)+\\dots+P_{B}(A_n)P(A_n)$","$P(B)=P_{A_1}(B)+\\dots+P_{A_n}(B)$"]},
+{"id":"6","d":2,"q":"Définition de l'indépendance de $A$ et $B$ ?","a":"$P(A\\cap B)=P(A)\\times P(B)$","p":["$P(A\\cap B)=0$","$P(A\\cup B)=P(A)+P(B)$","$P(A\\cap B)=P(A)+P(B)$"]},
+{"id":"7","d":2,"q":"Caractérisation de l'indépendance avec une probabilité conditionnelle ?","a":"$P_A(B)=P(B)$","p":["$P_A(B)=P(A)$","$P_A(B)=0$","$P_A(B)=1-P(B)$"]},
+{"id":"8","d":2,"q":"Quand $A$ et $B$ sont-ils incompatibles ?","a":"$A\\cap B=\\emptyset$","p":["$P(A\\cap B)=P(A)P(B)$","$A\\cup B=\\Omega$","$P(A)=P(B)$"]},
+{"id":"9","d":2,"q":"Si $A$ et $B$ sont indépendants, que dire de $\\bar{A}$ et $B$ ?","a":"Ils sont aussi indépendants","p":["Ils sont incompatibles","Ils ne sont pas indépendants","$P(\\bar{A}\\cap B)=0$"]}]}

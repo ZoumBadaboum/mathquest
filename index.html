@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MathQuest</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fc;--grid:#dfe4f5;--ink:#1c2340;--blue:#2b3fd6;--hl:#ffe14d;--ok:#1f9d55;--ko:#e5484d;--card:#fff;--mut:#6b7392}
+@media(prefers-color-scheme:dark){:root{--bg:#141829;--grid:#232a47;--ink:#eef0fb;--blue:#7b8cff;--hl:#ffd93b;--card:#1d2340;--mut:#9aa3c7}}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}
+#app{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:16px;margin:12px 0;box-shadow:4px 4px 0 var(--ink)}
+.btn{font:inherit;font-weight:600;background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;margin:4px 4px 4px 0}
+.btn.alt{background:var(--card);color:var(--ink)}.btn:focus-visible,input:focus-visible{outline:3px solid var(--hl)}
+input{font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);width:100%;margin:4px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.mut{color:var(--mut);font-size:.9rem}
+.bar{height:12px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--card)}.bar i{display:block;height:100%;background:var(--hl)}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:12px;margin:8px 0;cursor:pointer}
+.opt.ok{background:var(--ok);color:#fff}.opt.ko{background:var(--ko);color:#fff}
+.q{font-size:1.15rem;font-weight:600;margin:6px 0 12px}.flip{cursor:pointer;min-height:140px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem}
+.hl{background:var(--hl);color:#1c2340;padding:1px 6px;border-radius:4px;font-weight:700}.err{color:var(--ko);font-weight:600}
+td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.me{background:var(--hl);color:#1c2340}
+@media(prefers-reduced-motion:no-preference){.pop{animation:p .3s}@keyframes p{from{transform:scale(.9)}}}
+</style></head><body><div id="app">Chargement…</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script>
+// ====== À REMPLIR : Supabase > Project Settings > API ======
+const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
+// ===========================================================
+const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
+const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
+const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const norm=s=>s.toLowerCase().replace(/\s|\\/g,'').replace(/π/g,'pi').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/[×·]/g,'*').replace(/δ/g,'delta');
+const R=h=>{A.innerHTML=h;renderMathInElement(A,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})};
+let P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
+
+async function api(path,m='GET',b,h={}){const r=await fetch(SB.url+'/rest/v1/'+path,{method:m,body:b&&JSON.stringify(b),headers:{apikey:SB.key,...(SB.key.startsWith('eyJ')?{Authorization:'Bearer '+SB.key}:{}),'Content-Type':'application/json',...h}});if(!r.ok)throw 0;return r.status===204?null:r.json().catch(()=>null)}
+async function save(){try{if(SB.url)await api('joueurs','POST',P,{Prefer:'resolution=merge-duplicates'});else localStorage['p_'+P.pseudo]=JSON.stringify(P)}catch{}}
+
+async function boot(){
+  try{const idx=await (await fetch('content/index.json')).json();packs=await Promise.all(idx.map(f=>fetch('content/'+f).then(r=>r.json())))}catch{A.textContent='Contenu introuvable (content/index.json).';return}
+  ALL=packs.flatMap(p=>p.cartes.map(c=>({...c,ch:p.id,id:p.id+':'+c.id})));
+  const me=JSON.parse(localStorage.me||'null');
+  if(me&&await login(me.pseudo,me.pin,true))return;
+  loginView();
+}
+function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Pythagore"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="1234"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
+  window.go=async()=>{const ps=ps_.value.trim(),pn=pn_.value.trim();if(!ps)return loginView('Choisis un pseudo.');const h=pn?await sha(ps.toLowerCase()+pn):'';if(!await login(ps,h))loginView('PIN incorrect ou serveur injoignable.')}
+  window.ps_=document.getElementById('ps');window.pn_=document.getElementById('pn');
+}
+async function login(ps,h,silent){
+  let row=null;
+  try{row=SB.url?(await api('joueurs?pseudo=eq.'+encodeURIComponent(ps)+'&select=*'))[0]:JSON.parse(localStorage['p_'+ps]||'null')}catch{return false}
+  if(row){if(row.pin&&row.pin!==h)return false;P=row}else P={pseudo:ps,pin:h,xp:0,xp_semaine:0,semaine:wk(),progression:{}};
+  if(P.semaine!==wk()){P.semaine=wk();P.xp_semaine=0}
+  localStorage.me=JSON.stringify({pseudo:ps,pin:h});await save();home();return true
+}
+function out(){localStorage.removeItem('me');P=null;loginView()}
+function mastered(ch){return ALL.filter(c=>c.ch===ch&&(P.progression[c.id]?.b||0)>=4).length}
+function home(){
+  const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);
+  R(`<div class="row"><h1>Salut ${P.pseudo.replace(/[<&]/g,'')}</h1><button class="btn alt" onclick="out()">Quitter</button></div>
+  <div class="card"><div class="row"><b>Niveau ${l}</b><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span></div><div class="bar"><i style="width:${pc}%"></i></div></div>
+  ${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées</div><div class="bar" style="margin:8px 0"><i style="width:${mastered(p.id)/n*100}%"></i></div><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button></div>`}).join('')}
+  <button class="btn" onclick="rev('all')">Tout réviser</button><button class="btn alt" onclick="board('semaine')">Classement</button>`)
+}
+// ---- Consultation
+let ci=0,cl=[],flipped=false;
+function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
+function cview(){const c=cl[ci];R(`<button class="btn alt" onclick="home()">← Retour</button><p class="mut">Carte ${ci+1}/${cl.length} · difficulté ${'★'.repeat(c.d)}</p><div class="card flip pop" onclick="flipped=!flipped;cview()">${flipped?c.a:'<span class="q">'+c.q+'</span>'}</div><p class="mut">Touche la carte pour la retourner.</p><button class="btn alt" onclick="ci=(ci+cl.length-1)%cl.length;flipped=false;cview()">Précédente</button><button class="btn" onclick="ci=(ci+1)%cl.length;flipped=false;cview()">Suivante</button>`)}
+// ---- Révision
+function rev(ch){const t=day(),pool=ALL.filter(c=>ch==='all'||c.ch===ch),due=pool.filter(c=>!P.progression[c.id]||P.progression[c.id].due<=t);
+  Q=shuf(due.length?due:pool).slice(0,10);qi=0;combo=0;gained=0;good=0;if(!due.length)alert('Rien à réviser aujourd\'hui : mode libre !');qview()}
+function qview(){
+  if(qi>=Q.length)return end();
+  cur=Q[qi];const c=cur;cur.opts=shuf([c.a,...c.p.slice(0,3)]);
+  R(`<div class="row"><button class="btn alt" onclick="home()">Quitter</button><span class="mut">${qi+1}/${Q.length} · combo ×${Math.min(2,1+.1*combo).toFixed(1)}</span></div>
+  <div class="card pop"><div class="q">${c.q}</div>${cur.opts.map((o,i)=>`<button class="opt" onclick="pick(${i})">${o}</button>`).join('')}
+  ${c.t?`<hr><span class="mut">Ou tape ta réponse (XP ×1,5)</span><input id="ty" autocomplete="off" onkeydown="if(event.key==='Enter')typed()"><button class="btn" onclick="typed()">Valider</button>`:''}</div><div id="fb"></div>`)
+}
+function pick(i){const ok=cur.opts[i]===cur.a;document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(cur.opts[j]===cur.a)b.classList.add('ok');else if(j===i)b.classList.add('ko')});done(ok,false)}
+function typed(){const v=norm(document.getElementById('ty').value);if(!v)return;document.querySelectorAll('.opt,.btn').forEach(b=>b.disabled=b.classList.contains('alt')?false:true);done(cur.t.some(x=>norm(x)===v),true)}
+function done(ok,ty){
+  const s=P.progression[cur.id]||{b:0};let xp=2;
+  if(ok){combo++;xp=Math.round(10*cur.d*(ty?1.5:1)*Math.min(2,1+.1*(combo-1)));s.b=Math.min(5,s.b+1);good++}else{combo=0;s.b=Math.max(0,s.b-1);if(!cur.again){cur.again=1;Q.push(cur)}}
+  s.due=day()+[0,1,2,4,8,16][s.b];P.progression[cur.id]=s;P.xp+=xp;P.xp_semaine+=xp;gained+=xp;save();
+  const fb=document.getElementById('fb');fb.innerHTML=`<div class="card pop"><b class="${ok?'':'err'}">${ok?'Juste !':'Pas tout à fait.'}</b> <span class="hl">+${xp} XP</span>${ok?'':`<p>Réponse : ${cur.a}</p>`}<button class="btn" onclick="qi++;qview()">Suivant</button></div>`;renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false}],throwOnError:false})
+}
+function end(){R(`<h1>Séance terminée</h1><div class="card pop"><p><span class="hl">+${gained} XP</span></p><p>${good} bonnes réponses sur ${Q.length}.</p><button class="btn" onclick="home()">Accueil</button><button class="btn alt" onclick="board('semaine')">Classement</button></div>`)}
+// ---- Classement
+async function board(t){
+  if(!SB.url)return R(`<button class="btn alt" onclick="home()">← Retour</button><div class="card">Le classement s'active quand Supabase est configuré (voir README).</div>`);
+  let rows=[];try{rows=await api(t==='semaine'?`joueurs?select=pseudo,xp_semaine&semaine=eq.${wk()}&order=xp_semaine.desc&limit=20`:'joueurs?select=pseudo,xp&order=xp.desc&limit=20')}catch{}
+  const k=t==='semaine'?'xp_semaine':'xp';
+  R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Classement</h2><button class="btn ${t==='semaine'?'':'alt'}" onclick="board('semaine')">Cette semaine</button><button class="btn ${t==='total'?'':'alt'}" onclick="board('total')">Total</button><div class="card"><table>${rows.map((r,i)=>`<tr class="${r.pseudo===P.pseudo?'me':''}"><td>${i+1}</td><td>${r.pseudo.replace(/[<&]/g,'')}</td><td>${r[k]} XP</td></tr>`).join('')||'<tr><td>Personne pour l\'instant.</td></tr>'}</table></div>`)
+}
+boot();
+</script></body></html>

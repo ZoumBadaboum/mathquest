@@ -1,0 +1,9 @@
+{"id":"tr","titre":"Trigonométrie","niveau":"1ère Spé","cartes":[
+{"id":"1","d":1,"q":"Définition du cercle trigonométrique ?","a":"Cercle de rayon $1$, muni d'une origine et du sens direct (inverse des aiguilles d'une montre)","p":["Cercle de rayon $1$, orienté dans le sens des aiguilles d'une montre","Cercle de rayon $2\\pi$, orienté dans le sens direct","Cercle de périmètre $1$, sans origine"]},
+{"id":"2","d":1,"q":"Périmètre du cercle trigonométrique ?","a":"$2\\pi$","p":["$\\pi$","$1$","$4\\pi$"],"t":["2pi"]},
+{"id":"3","d":2,"q":"Un point $M$ du cercle est image de $m$. De quels autres réels est-il l'image ?","a":"$m+2k\\pi$, avec $k\\in\\mathbb{Z}$","p":["$m+k\\pi$, avec $k\\in\\mathbb{Z}$","$m+2k$, avec $k\\in\\mathbb{Z}$","$2m+k\\pi$, avec $k\\in\\mathbb{Z}$"]},
+{"id":"4","d":2,"q":"Mesure principale d'un angle ?","a":"L'unique mesure appartenant à $]-\\pi;\\pi]$","p":["L'unique mesure appartenant à $[0;2\\pi[$","L'unique mesure appartenant à $]-\\pi;\\pi[$","L'unique mesure appartenant à $[-\\pi;0]$"]},
+{"id":"5","d":2,"q":"Définition du radian ?","a":"Mesure d'un angle au centre qui intercepte un arc de longueur $1$","p":["Mesure d'un angle au centre qui intercepte un arc de longueur $\\pi$","Mesure d'un angle au centre qui intercepte un arc de longueur $2\\pi$","Mesure d'un angle de $1^\\circ$"]},
+{"id":"6","d":1,"q":"$180^\\circ$ en radians ?","a":"$\\pi$","p":["$2\\pi$","$\\dfrac{\\pi}{2}$","$\\dfrac{\\pi}{4}$"],"t":["pi"]},
+{"id":"7","d":1,"q":"$60^\\circ$ en radians ?","a":"$\\dfrac{\\pi}{3}$","p":["$\\dfrac{\\pi}{6}$","$\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{2}$"],"t":["pi/3"]},
+{"id":"8","d":3,"q":"Mesure principale de $\\dfrac{27\\pi}{4}$ ?","a":"$\\dfrac{3\\pi}{4}$","p":["$\\dfrac{7\\pi}{4}$","$-\\dfrac{\\pi}{4}$","$\\dfrac{\\pi}{4}$"],"t":["3pi/4"]}]}

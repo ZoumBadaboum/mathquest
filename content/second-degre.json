@@ -1,0 +1,10 @@
+{"id":"sd","titre":"Second degré","niveau":"1ère Spé","cartes":[
+{"id":"1","d":1,"q":"Forme développée d'une fonction polynôme du second degré ?","a":"$f(x)=ax^2+bx+c$ avec $a\\neq0$","p":["$f(x)=a(x-\\alpha)^2+\\beta$","$f(x)=a(x-x_1)(x-x_2)$","$f(x)=ax+b$"],"t":["ax^2+bx+c"]},
+{"id":"2","d":1,"q":"Discriminant du trinôme $ax^2+bx+c$ ?","a":"$\\Delta=b^2-4ac$","p":["$\\Delta=b^2+4ac$","$\\Delta=b-4ac$","$\\Delta=b^2-2ac$"],"t":["b^2-4ac","delta=b^2-4ac"]},
+{"id":"3","d":2,"q":"Solutions de $ax^2+bx+c=0$ si $\\Delta>0$ ?","a":"$x_{1,2}=\\dfrac{-b\\mp\\sqrt{\\Delta}}{2a}$","p":["$x_{1,2}=\\dfrac{b\\mp\\sqrt{\\Delta}}{2a}$","$x_{1,2}=\\dfrac{-b\\mp\\sqrt{\\Delta}}{a}$","$x_{1,2}=\\dfrac{-b\\mp\\Delta}{2a}$"]},
+{"id":"4","d":2,"q":"Solution de $ax^2+bx+c=0$ si $\\Delta=0$ ?","a":"Une solution double $x_0=-\\dfrac{b}{2a}$","p":["Une solution $x_0=\\dfrac{b}{2a}$","Une solution $x_0=-\\dfrac{b}{a}$","Aucune solution"]},
+{"id":"5","d":1,"q":"Combien de solutions réelles si $\\Delta<0$ ?","a":"Aucune","p":["Une","Deux","Une double"],"t":["0","aucune"]},
+{"id":"6","d":2,"q":"Sommet de la parabole de $f(x)=ax^2+bx+c$ ?","a":"$S(\\alpha;\\beta)$ avec $\\alpha=-\\dfrac{b}{2a}$ et $\\beta=f(\\alpha)$","p":["$S(\\alpha;\\beta)$ avec $\\alpha=\\dfrac{b}{2a}$ et $\\beta=f(\\alpha)$","$S(\\alpha;\\beta)$ avec $\\alpha=-\\dfrac{c}{2a}$ et $\\beta=f(\\alpha)$","$S(\\alpha;\\beta)$ avec $\\alpha=-\\dfrac{b}{a}$ et $\\beta=f(0)$"]},
+{"id":"7","d":2,"q":"Variations de $f$ si $a>0$ ?","a":"Décroissante sur $]-\\infty;\\alpha]$ puis croissante ; minimum $\\beta$","p":["Croissante sur $]-\\infty;\\alpha]$ puis décroissante ; maximum $\\beta$","Croissante sur $\\mathbb{R}$","Décroissante sur $\\mathbb{R}$"]},
+{"id":"8","d":3,"q":"Signe de $ax^2+bx+c$ si $\\Delta>0$ ?","a":"Signe de $a$ à l'extérieur des racines, signe de $-a$ entre les racines","p":["Signe de $-a$ à l'extérieur des racines, signe de $a$ entre","Toujours du signe de $a$","Signe de $a$ entre les racines seulement"]},
+{"id":"9","d":2,"q":"Factorisation de $ax^2+bx+c$ si $\\Delta=0$ ?","a":"$a(x-x_0)^2$","p":["$a(x-x_0)(x+x_0)$","$(x-x_0)^2$","$a(x+x_0)^2$"]}]}
