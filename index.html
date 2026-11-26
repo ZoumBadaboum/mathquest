@@ -7,7 +7,16 @@
 @media(prefers-color-scheme:dark){:root{--bg:#141829;--grid:#232a47;--ink:#eef0fb;--blue:#7b8cff;--hl:#ffd93b;--card:#1d2340;--mut:#9aa3c7}}
 *{box-sizing:border-box}html,body{margin:0}
 body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;min-height:100vh}
-#app{max-width:560px;margin:0 auto;padding:16px}
+#app{max-width:1000px;margin:0 auto;padding:76px 16px 16px}#app.n{max-width:560px}
+#top{display:none;position:fixed;top:0;left:0;right:0;z-index:10;align-items:center;gap:10px;background:var(--card);border-bottom:2px solid var(--ink);padding:8px 12px}
+#top nav{display:flex;gap:2px;margin-left:auto}
+.tb{font:inherit;background:none;border:0;color:var(--ink);cursor:pointer;padding:6px;border-radius:8px;font-size:1rem;white-space:nowrap}.tb:hover,.tb:focus-visible{background:var(--hl);color:#1c2340;outline:0}
+.tb b{display:block;max-width:100px;overflow:hidden;text-overflow:ellipsis}
+.lv{width:90px;font-size:.8rem}.lv .bar{height:8px}.lb{display:none}
+@media(min-width:700px){.lb{display:inline}.lv{width:160px}.tb b{max-width:220px}}
+.hs{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6px 12px 0}.hs .card{flex:0 0 min(300px,82%);scroll-snap-align:start;margin:8px 0}
+.lock{opacity:.55;border-style:dashed;box-shadow:none;text-align:center}
+footer{margin:28px 0 8px;text-align:center;font-size:.8rem;color:var(--mut)}.lnk{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
 .card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:16px;margin:12px 0;box-shadow:4px 4px 0 var(--ink)}
 .btn{font:inherit;font-weight:600;background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer;margin:4px 4px 4px 0}
@@ -21,7 +30,7 @@ input{font:inherit;padding:10px;border:2px solid var(--ink);border-radius:10px;b
 .sc{color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}.hl{background:var(--hl);color:#1c2340;padding:1px 6px;border-radius:4px;font-weight:700}.err{color:var(--ko);font-weight:600}
 td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.me{background:var(--hl);color:#1c2340}
 @media(prefers-reduced-motion:no-preference){.pop{animation:p .3s}@keyframes p{from{transform:scale(.9)}}}
-</style></head><body><div id="app">Chargement…</div>
+</style></head><body><div id="top"></div><div id="app">Chargement…</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script>
@@ -34,7 +43,8 @@ const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const norm=s=>s.toLowerCase().replace(/\s|\\/g,'').replace(/π/g,'pi').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/[×·]/g,'*').replace(/δ/g,'delta');
-const R=h=>{A.innerHTML=h;renderMathInElement(A,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})};
+const esc=s=>s.replace(/[<>&"]/g,'');
+const R=(h,w)=>{A.className=w?'':'n';A.innerHTML=h;renderMathInElement(A,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})};
 let ev=false,P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
 
 async function api(path,m='GET',b,h={}){const r=await fetch(SB.url+'/rest/v1/'+path,{method:m,body:b&&JSON.stringify(b),headers:{apikey:SB.key,...(SB.key.startsWith('eyJ')?{Authorization:'Bearer '+SB.key}:{}),'Content-Type':'application/json',...h}});if(!r.ok)throw new Error(r.status+' '+await r.text());return r.status===204?null:r.json().catch(()=>null)}
@@ -58,17 +68,22 @@ async function login(ps,h,silent){
   if(P.semaine!==wk()){P.semaine=wk();P.xp_semaine=0}
   localStorage.me=JSON.stringify({pseudo:ps,pin:h});await save();home();return true
 }
-function out(){localStorage.removeItem('me');P=null;loginView()}
+function out(){localStorage.removeItem('me');P=null;bar();loginView()}
 function mastered(ch){return ALL.filter(c=>c.ch===ch&&(P.progression[c.id]?.b||0)>=3).length}
 function prog(ch){const c=ALL.filter(x=>x.ch===ch);return Math.round(c.reduce((a,x)=>a+Math.min(3,P.progression[x.id]?.b||0),0)/(3*c.length)*100)}
 function resume(){const s=P.progression._s;ev=s.ev;ALL.forEach(c=>c.again=0);const seen={};Q=s.ids.map(id=>{const c=ALL.find(x=>x.id===id);if(c&&seen[id])c.again=1;seen[id]=1;return c}).filter(Boolean);Q.ch=s.ch;qi=s.qi;combo=s.combo;gained=s.gained;good=s.good;qview()}
-function home(){
-  const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'',l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);
-  R(`<div class="row"><h1>Salut ${P.pseudo.replace(/[<&]/g,'')}</h1><button class="btn alt" onclick="out()">Quitter</button></div>
-  <div class="card"><div class="row"><b>Niveau ${l}</b><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span></div><div class="bar"><i style="width:${pc}%"></i></div>${stats('all')}</div>
-  ${sv}${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées · ${prog(p.id)} % de progression</div><div class="bar" style="margin:8px 0"><i style="width:${prog(p.id)}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}
-  <button class="btn" onclick="rev('all')">Tout réviser</button><button class="btn alt" onclick="evalStart('all')">Tout évaluer</button><button class="btn alt" onclick="board('semaine')">Classement</button>`)
-}
+function bar(){const t=document.getElementById('top');if(!P){t.style.display='none';t.innerHTML='';return}
+  const l=lvl(P.xp),pc=Math.min(100,(P.xp-need(l))/(need(l+1)-need(l))*100|0);t.style.display='flex';
+  t.innerHTML=`<button class="tb" onclick="home()" aria-label="Accueil"><b>Salut ${esc(P.pseudo)}</b></button><div class="lv"><b>Niv. ${l}</b><div class="bar"><i style="width:${pc}%"></i></div></div><nav><button class="tb" onclick="evalStart('all')" title="Éval" aria-label="Éval">✎<span class="lb"> EVAL</span></button><button class="tb" onclick="board('semaine')" title="Classement" aria-label="Classement">🏆<span class="lb"> Classement</span></button><button class="tb" onclick="out()" title="Déconnexion" aria-label="Déconnexion">⎋<span class="lb"> Déconnexion</span></button></nav>`}
+function home(){bar();
+  const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'';
+  R(`${sv}<div class="card"><span class="mut">${P.xp} XP · ${P.xp_semaine} cette semaine</span>${stats('all')}</div>
+  <div class="row"><h2>Flash cards</h2><button class="btn alt" onclick="rev('all')">Tout réviser</button></div>
+  <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card"><b>${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} cartes maîtrisées · ${prog(p.id)} % de progression</div><div class="bar" style="margin:8px 0"><i style="width:${prog(p.id)}%"></i></div>${stats(p.id)}<button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div>`}).join('')}</div>
+  <h2>Exo express</h2><div class="card lock">🔒 Section à venir</div>
+  <h2>Exos types bac</h2><div class="card lock">🔒 Section à venir</div>
+  <footer>MathQuest · <button class="lnk" onclick="legal()">Crédits et mentions légales</button></footer>`,1)}
+function legal(){R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Crédits et mentions légales</h2><div class="card"><p><b>Éditeur :</b> [À COMPLÉTER : nom ou pseudonyme, contact]</p><p><b>Contenu des cours :</b> [À COMPLÉTER : auteur du cours, établissement]</p><p><b>Hébergement du site :</b> GitHub Pages (GitHub, Inc., San Francisco, États-Unis). <b>Base de données :</b> Supabase.</p><p><b>Données collectées :</b> uniquement ton pseudo, ton PIN (stocké haché), ton XP, tes scores et ta progression. Aucun nom, e-mail ni cookie publicitaire. Ton pseudo est mémorisé dans le stockage local de ton navigateur pour te reconnecter. N'utilise pas ton vrai nom.</p><p><b>Suppression :</b> pour effacer ton compte, contacte l'éditeur : [À COMPLÉTER].</p></div>`)}
 // ---- Consultation
 let ci=0,cl=[],flipped=false;
 function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
@@ -91,7 +106,7 @@ function done(ok,ty){
   else{const s=P.progression[cur.id]||{b:0};
     if(ok){combo++;xp=Math.round(10*cur.d*(ty?1.5:1)*Math.min(2,1+.1*(combo-1)));s.b=Math.min(5,s.b+1);good++}else{combo=0;s.b=Math.max(0,s.b-1);if(!cur.again){cur.again=1;Q.push(cur)}}
     s.due=day()+[0,1,2,4,8,16][s.b];P.progression[cur.id]=s}
-  P.xp+=xp;P.xp_semaine+=xp;gained+=xp;P.progression._s={ev,ch:Q.ch,ids:Q.map(c=>c.id),qi:qi+1,combo,gained,good};save();
+  P.xp+=xp;P.xp_semaine+=xp;gained+=xp;P.progression._s={ev,ch:Q.ch,ids:Q.map(c=>c.id),qi:qi+1,combo,gained,good};save();bar();
   const fb=document.getElementById('fb');fb.innerHTML=`<div class="card pop"><b class="${ok?'':'err'}">${ok?'Juste !':'Pas tout à fait.'}</b> <span class="hl">+${xp} XP</span>${ok?'':`<p>Réponse : ${cur.a}</p>`}<button class="btn" onclick="qi++;qview()">Suivant</button></div>`;renderMathInElement(fb,{delimiters:[{left:'$',right:'$',display:false}],throwOnError:false})
 }
 function end(){delete P.progression._s;save();
