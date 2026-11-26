@@ -23,6 +23,8 @@ body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);bac
 .pr{display:flex;align-items:center;gap:8px}.pr .bar{flex:1}.pr span{font-size:.85rem;min-width:2.8em;text-align:right}
 .st{min-height:3.4em}.st>div{margin:0!important}
 .acts{display:flex;gap:6px;margin-top:auto}.acts .btn{flex:1;margin:0;padding:10px 6px;white-space:nowrap}
+.sts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0}.sts>div{display:flex;flex-direction:column;align-items:flex-start;gap:3px}.sts .mut{font-size:.78rem}
+.sc{white-space:nowrap}.ch .mut,.sts .mut{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .lock{opacity:.55;border-style:dashed;box-shadow:none;text-align:center}
 footer{margin:28px 0 8px;text-align:center;font-size:.8rem;color:var(--mut)}.lnk{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
@@ -126,7 +128,7 @@ function end(){delete P.progression._s;save();
 const col=p=>`hsl(${Math.round(p*1.2)},62%,36%)`;
 function evalStart(ch){ev=true;Q=shuf(ALL.filter(c=>ch==='all'||c.ch===ch)).slice(0,10);Q.ch=ch;delete P.progression._s;qi=0;combo=0;gained=0;good=0;qview()}
 function stats(ch){const L=(P.progression._ev||[]).filter(e=>ch==='all'||e.c===ch);if(!L.length)return'';const best=Math.max(...L.map(e=>e.s)),l5=L.slice(-5),avg=Math.round(l5.reduce((a,e)=>a+e.s,0)/l5.length);
-  return `<div class="mut" style="margin:6px 0">Éval · meilleur <span class="sc" style="background:${col(best)}">${best}%</span> · moyenne des ${l5.length} derniers <span class="sc" style="background:${col(avg)}">${avg}%</span></div>`}
+  return `<div class="sts"><div><span class="mut">Meilleur éval</span><span class="sc" style="background:${col(best)}">${best}%</span></div><div><span class="mut">Moy. ${l5.length>1?l5.length+' derniers':'dernier'}</span><span class="sc" style="background:${col(avg)}">${avg}%</span></div></div>`}
 // ---- Classement
 async function board(t){
   if(!SB.url)return R(`<button class="btn alt" onclick="home()">← Retour</button><div class="card">Le classement s'active quand Supabase est configuré (voir README).</div>`);
