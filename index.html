@@ -32,7 +32,7 @@ body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);bac
 .tabs{display:flex;flex-wrap:wrap;gap:4px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin:12px 0}
 .item{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
 .item.eq{background:var(--hl);color:#1c2340}.item:disabled{opacity:.5;cursor:not-allowed}.item span{font-size:.85rem}
-.lb{overflow-x:auto;padding:8px}.lbg{display:grid;grid-template-columns:34px minmax(120px,1fr) 226px 64px 64px;gap:8px;align-items:center;min-width:590px;padding:6px 4px}
+.lbx{overflow-x:auto;padding:8px}.lbg{display:grid;grid-template-columns:34px minmax(120px,1fr) 226px 64px 64px;gap:8px;align-items:center;min-width:590px;padding:6px 4px}
 .lbr{border-top:1px solid var(--grid)}.lbr.me{background:var(--hl);color:#1c2340;border-radius:8px}.rk{font-size:1.3rem;text-align:center}
 .who{display:flex;align-items:center;gap:8px;min-width:0}.who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dks{display:flex;gap:4px}.dks .sc{font-size:.72rem;padding:1px 6px}
@@ -59,7 +59,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
-const VERSION='1.7 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
+const VERSION='1.7.2 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -176,10 +176,9 @@ function qview(){
   cur=Q[qi];const c=cur;cur.opts=shuf([c.a,...c.p.slice(0,3)]);
   R(`<div class="row"><button class="btn alt" onclick="home()">Quitter</button><span class="mut">${qi+1}/${Q.length} · ${ev?'éval':'combo ×'+Math.min(2,1+.1*combo).toFixed(1)}</span></div>
   <div class="card pop"><div class="q">${c.q}</div>${cur.opts.map((o,i)=>`<button class="opt" onclick="pick(${i})">${o}</button>`).join('')}
-  ${c.t&&!ev?`<hr><span class="mut">Ou tape ta réponse (XP ×1,5)</span><input id="ty" autocomplete="off" onkeydown="if(event.key==='Enter')typed()"><button class="btn" onclick="typed()">Valider</button>`:''}</div><div id="fb"></div>`)
+  </div><div id="fb"></div>`)
 }
 function pick(i){const ok=cur.opts[i]===cur.a;document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(cur.opts[j]===cur.a)b.classList.add('ok');else if(j===i)b.classList.add('ko')});done(ok,false)}
-function typed(){const v=norm(document.getElementById('ty').value);if(!v)return;document.querySelectorAll('.opt,.btn').forEach(b=>b.disabled=b.classList.contains('alt')?false:true);done(cur.t.some(x=>norm(x)===v),true)}
 function done(ok,ty){
   let xp=2;const was=(P.progression[cur.id]?.b||0)>=MASTER;
   if(ev){xp=ok?5*cur.d:0;if(ok){good++;combo++}else combo=0}
@@ -208,7 +207,7 @@ async function board(k){k=k||'xp';
     return {pseudo:r.pseudo,xp:r.xp,dk,fc:dk.reduce((a,b)=>a+b,0)/(dk.length||1),ds:ev.length?Math.round(ev.reduce((a,e)=>a+e.s,0)/ev.length):null,av:(pr._g&&pr._g.av)||{}}});
   rows.sort((a,b)=>(b[k]??-1)-(a[k]??-1));const md=['🥇','🥈','🥉'];
   R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Classement</h2><p class="mut">Le tri « Flash cards » utilise la moyenne des % de validation des decks (non affichée).</p>
-<div class="card lb"><div class="lbg lbh"><span></span><span>Joueur</span>${SORTS.map(([c,n])=>`<button class="sorth ${c===k?'on':''}" onclick="board('${c}')">${n} ▼</button>`).join('')}</div>
+<div class="card lbx"><div class="lbg lbh"><span></span><span>Joueur</span>${SORTS.map(([c,n])=>`<button class="sorth ${c===k?'on':''}" onclick="board('${c}')">${n} ▼</button>`).join('')}</div>
 ${rows.map((r,i)=>`<div class="lbg lbr ${r.pseudo===P.pseudo?'me':''}"><span class="rk">${md[i]||i+1}</span><span class="who">${avatar(r.av,32)}<b>${esc(r.pseudo)}</b></span><span class="dks">${r.dk.map((v,j)=>`<span class="sc" style="background:${col(v)}">${esc(packs[j].court||packs[j].titre)} ${v}%</span>`).join('')}</span><span>${r.ds==null?'—':`<span class="sc" style="background:${col(r.ds)}">${r.ds}%</span>`}</span><b>${r.xp}</b></div>`).join('')||'<p>Personne pour l\'instant.</p>'}</div>`)}
 boot();
 </script></body></html>

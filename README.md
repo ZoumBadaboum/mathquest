@@ -10,9 +10,9 @@ Dépose un fichier dans `content/` et ajoute son nom dans `content/index.json`.
 
 ```json
 {"id":"xx","titre":"Titre","niveau":"1ère Spé","cartes":[
- {"id":"1","d":1,"q":"Question ($LaTeX$)","a":"Bonne réponse","p":["Piège 1","Piège 2","Piège 3"],"t":["réponse tapée acceptée"]}]}
+ {"id":"1","d":1,"q":"Question ($LaTeX$)","a":"Bonne réponse","p":["Piège 1","Piège 2","Piège 3"]}]}
 ```
-`d` = difficulté 1 à 5 · `p` = mauvaises réponses plausibles (erreurs classiques) · `t` = optionnel, réponses tapées acceptées (sans `t`, la carte reste en QCM). Dans le JSON, écris `\\` pour chaque `\` de LaTeX.
+`d` = difficulté 1 à 5 · `p` = mauvaises réponses plausibles (erreurs classiques). Dans le JSON, écris `\\` pour chaque `\` de LaTeX.
 
 ## Limites de cette v1
 - Le PIN (haché) et le score sont lisibles et modifiables par un joueur technique : OK entre élèves, pas pour un concours.
