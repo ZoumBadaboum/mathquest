@@ -1,4 +1,4 @@
-{"id":"pr","titre":"Probabilités conditionnelles","niveau":"1ère Spé","cartes":[
+{"id":"pr","titre":"Probabilités conditionnelles","niveau":"1ère Spé","court":"Proba","cartes":[
 {"id":"1","d":1,"q":"Définition de $P_A(B)$ (avec $P(A)\\neq0$) ?","a":"$P_A(B)=\\dfrac{P(A\\cap B)}{P(A)}$","p":["$P_A(B)=\\dfrac{P(A\\cap B)}{P(B)}$","$P_A(B)=\\dfrac{P(A)}{P(A\\cap B)}$","$P_A(B)=P(A)\\times P(B)$"]},
 {"id":"2","d":1,"q":"Expression de $P(A\\cap B)$ avec une probabilité conditionnelle ?","a":"$P(A\\cap B)=P_A(B)\\times P(A)$","p":["$P(A\\cap B)=P_A(B)+P(A)$","$P(A\\cap B)=\\dfrac{P_A(B)}{P(A)}$","$P(A\\cap B)=P_A(B)\\times P(B)$"]},
 {"id":"3","d":2,"q":"Quand des événements $A_1,\\dots,A_n$ forment-ils une partition de $\\Omega$ ?","a":"De probabilités non nulles, deux à deux incompatibles, et d'union $\\Omega$","p":["Deux à deux indépendants, et d'union $\\Omega$","Incompatibles, et d'intersection $\\Omega$","Indépendants, et de probabilité $\\frac{1}{2}$ chacun"]},

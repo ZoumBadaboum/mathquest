@@ -1,4 +1,4 @@
-{"id":"sd","titre":"Second degré","niveau":"1ère Spé","cartes":[
+{"id":"sd","titre":"Second degré","niveau":"1ère Spé","court":"2nd deg","cartes":[
 {"id":"1","d":1,"q":"Forme développée d'une fonction polynôme du second degré ?","a":"$f(x)=ax^2+bx+c$ avec $a\\neq0$","p":["$f(x)=a(x-\\alpha)^2+\\beta$","$f(x)=a(x-x_1)(x-x_2)$","$f(x)=ax+b$"],"t":["ax^2+bx+c"]},
 {"id":"2","d":1,"q":"Discriminant du trinôme $ax^2+bx+c$ ?","a":"$\\Delta=b^2-4ac$","p":["$\\Delta=b^2+4ac$","$\\Delta=b-4ac$","$\\Delta=b^2-2ac$"],"t":["b^2-4ac","delta=b^2-4ac"]},
 {"id":"3","d":2,"q":"Solutions de $ax^2+bx+c=0$ si $\\Delta>0$ ?","a":"$x_{1,2}=\\dfrac{-b\\mp\\sqrt{\\Delta}}{2a}$","p":["$x_{1,2}=\\dfrac{b\\mp\\sqrt{\\Delta}}{2a}$","$x_{1,2}=\\dfrac{-b\\mp\\sqrt{\\Delta}}{a}$","$x_{1,2}=\\dfrac{-b\\mp\\Delta}{2a}$"]},

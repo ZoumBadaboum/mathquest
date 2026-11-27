@@ -1,4 +1,4 @@
-{"id":"tr","titre":"Trigonométrie","niveau":"1ère Spé","cartes":[
+{"id":"tr","titre":"Trigonométrie","niveau":"1ère Spé","court":"Trigo","cartes":[
 {"id":"1","d":1,"q":"Définition du cercle trigonométrique ?","a":"Cercle de rayon $1$, muni d'une origine et du sens direct (inverse des aiguilles d'une montre)","p":["Cercle de rayon $1$, orienté dans le sens des aiguilles d'une montre","Cercle de rayon $2\\pi$, orienté dans le sens direct","Cercle de périmètre $1$, sans origine"]},
 {"id":"2","d":1,"q":"Périmètre du cercle trigonométrique ?","a":"$2\\pi$","p":["$\\pi$","$1$","$4\\pi$"],"t":["2pi"]},
 {"id":"3","d":2,"q":"Un point $M$ du cercle est image de $m$. De quels autres réels est-il l'image ?","a":"$m+2k\\pi$, avec $k\\in\\mathbb{Z}$","p":["$m+k\\pi$, avec $k\\in\\mathbb{Z}$","$m+2k$, avec $k\\in\\mathbb{Z}$","$2m+k\\pi$, avec $k\\in\\mathbb{Z}$"]},
