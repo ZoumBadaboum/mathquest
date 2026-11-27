@@ -54,6 +54,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
+const VERSION='1.6 · 27/11/2026';
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -74,7 +75,7 @@ async function boot(){
   if(me&&await login(me.pseudo,me.pin,true))return;
   loginView();
 }
-function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Gauss"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="ex : 0000"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
+function loginView(e=''){R(`<h1>MathQuest</h1><p class="mut">Révise ton cours en gagnant de l'XP.</p><div class="card"><b>Ton pseudo</b><input id="ps" maxlength="20" autocomplete="off" placeholder="ex : Gauss"><b>Code PIN (4 chiffres, facultatif)</b><input id="pn" inputmode="numeric" maxlength="4" placeholder="ex : 0000"><p class="err">${e}</p><button class="btn" onclick="go()">Jouer</button><p class="mut">Pseudo existant : retape-le (et ton PIN s'il en a un) pour retrouver ta progression. N'utilise pas ton vrai nom.</p><p class="mut">MathQuest v${VERSION}</p>${SB.url?'':'<p class="mut">Mode local : Supabase n\'est pas configuré, la progression reste sur cet appareil.</p>'}</div>`);
   window.go=async()=>{const ps=ps_.value.trim(),pn=pn_.value.trim();if(!ps)return loginView('Choisis un pseudo.');const h=pn?await sha(ps.toLowerCase()+pn):'';if(!await login(ps,h))loginView(window.lastErr?'Erreur serveur : '+window.lastErr:'PIN incorrect.')}
   window.ps_=document.getElementById('ps');window.pn_=document.getElementById('pn');
 }
@@ -99,7 +100,7 @@ function home(){touchDay();bar();const due=ALL.filter(c=>!P.progression[c.id]||P
   <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card ch"><b class="t">${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} maîtrisées</div><div class="pr"><div class="bar"><i style="width:${prog(p.id)}%"></i></div><span>${prog(p.id)} %</span></div><div class="st">${stats(p.id)||'<div class="mut">Pas encore d\'éval</div>'}</div><div class="acts"><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div></div>`}).join('')}</div>
   <h2>Exo express</h2><div class="card lock">🔒 Section à venir</div>
   <h2>Exos types bac</h2><div class="card lock">🔒 Section à venir</div>
-  <footer>MathQuest · <button class="lnk" onclick="legal()">Crédits et mentions légales</button></footer>`,1)}
+  <footer>MathQuest v${VERSION} · <button class="lnk" onclick="legal()">Crédits et mentions légales</button></footer>`,1)}
 function legal(){R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Crédits et mentions légales</h2><div class="card"><p><b>Éditeur :</b> ZoumB</p><p><b>Contenu des cours :</b> Merci à M. K pour les cours</p><p><b>Hébergement du site :</b> GitHub Pages (GitHub, Inc., San Francisco, États-Unis). <b>Base de données :</b> Supabase.</p><p><b>Données collectées :</b> uniquement ton pseudo, ton PIN (stocké haché), ton XP, tes scores et ta progression. Aucun nom, e-mail ni cookie publicitaire. Ton pseudo est mémorisé dans le stockage local de ton navigateur pour te reconnecter. N'utilise pas ton vrai nom.</p><p><b>Suppression :</b> pour effacer ton compte, contacte l'éditeur.</p></div>`)}
 // ---- Succès, rubis, avatar, boutique (données dans progression._g)
 const G=()=>P.progression._g||(P.progression._g={s:{rv:0,mc:0,ev:0,pf:0,e80:0,dd:[]},cl:{},ru:0,own:[],av:{mo:'m0',ey:'e0',ha:'h0',gl:'g0',ht:'t0',bg:'b0'}});
