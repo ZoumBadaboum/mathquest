@@ -37,7 +37,7 @@ body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);bac
 .who{display:flex;align-items:center;gap:8px;min-width:0}.who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dks{display:flex;gap:4px}.dks .sc{font-size:.72rem;padding:1px 6px}
 .sorth{font:inherit;font-weight:700;background:none;border:0;color:var(--ink);cursor:pointer;padding:4px;border-radius:6px;text-align:left}.sorth.on{background:var(--hl);color:#1c2340}
-.promo{width:130px;margin:0;font-size:.8rem;padding:6px 8px;border-width:1px;text-transform:uppercase}.promo::placeholder{color:var(--mut)}
+.rt{display:flex;align-items:center;gap:8px}.rt .btn{margin:0}.promo{width:120px;margin:0;font-size:.8rem;padding:6px 8px;border-width:1px;text-transform:uppercase}.promo::placeholder{color:var(--mut)}
 .lock{opacity:.55;border-style:dashed;box-shadow:none;text-align:center}
 footer{margin:28px 0 8px;text-align:center;font-size:.8rem;color:var(--mut)}.lnk{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
@@ -60,7 +60,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
-const VERSION='1.8.1 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
+const VERSION='1.8.2 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -163,7 +163,7 @@ const ITEMS=[
 function avatar(av,sz){const it=k=>ITEMS.find(i=>i.id===av[k])||{};
   return `<svg class="av" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true">${it('bg').s||''}${it('ha').b||''}<circle cx="50" cy="54" r="30" fill="#ffd9b3"/><path d="M50 52v8h-5" stroke="#b9774a" stroke-width="2.5" fill="none" stroke-linecap="round"/>${it('ey').s||''}${it('mo').s||''}${it('ha').f||''}${it('gl').s||''}${it('ht').s||''}</svg>`}
 let pmsg='',sh='mo';const SL=[['mo','Bouche'],['ey','Yeux'],['ha','Cheveux'],['gl','Lunettes'],['ht','Chapeau'],['bg','Fond']];
-function shop(k){if(k)sh=k;const g=G(),pm=pmsg;pmsg='';R(`<div class="row"><h2>Avatar</h2><span class="rub">${rb()} ${g.ru}</span></div><div class="row"><span><button class="btn alt" onclick="home()">← Retour</button><button class="btn alt" onclick="succ()">Succès</button></span><input id="pc" class="promo" placeholder="REDEEM CODE" autocomplete="off" aria-label="Code promo" onkeydown="if(event.key==='Enter')promo()"></div>${pm?`<p class="mut">${pm}</p>`:''}
+function shop(k){if(k)sh=k;const g=G(),pm=pmsg;pmsg='';R(`<div class="row"><h2>Avatar</h2><span class="rub">${rb()} ${g.ru}</span></div><div class="row"><button class="btn alt" onclick="home()">← Retour</button><span class="rt"><input id="pc" class="promo" placeholder="REDEEM CODE" autocomplete="off" aria-label="Code promo" onkeydown="if(event.key==='Enter')promo()"><button class="btn alt" onclick="succ()">Succès</button></span></div>${pm?`<p class="mut">${pm}</p>`:''}
 <div class="card" style="display:flex;justify-content:center">${avatar(g.av,120)}</div><div class="tabs">${SL.map(([c,n])=>`<button class="btn ${c===sh?'':'alt'}" onclick="shop('${c}')">${n}</button>`).join('')}</div>
 <div class="grid">${ITEMS.filter(i=>i.k===sh).map(i=>{const own=!i.p||g.own.includes(i.id),eq=g.av[sh]===i.id;return `<button class="item ${eq?'eq':''}" onclick="buy('${i.id}')" ${!own&&g.ru<i.p?'disabled':''}>${avatar({...g.av,[sh]:i.id},56)}<b>${i.n}</b><span>${eq?'Équipé':own?'Équiper':i.p+' '+rb()}</span></button>`}).join('')}</div>`)}
 async function promo(){const v=document.getElementById('pc').value.trim().toUpperCase();if(!v)return;const g=G(),h=await sha(v);let C={};
