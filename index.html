@@ -59,7 +59,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
-const VERSION='1.7.2 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
+const VERSION='1.8 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -139,10 +139,12 @@ const ITEMS=[
 {id:'h2',k:'ha',n:'Long',p:25,b:'<path d="M18 52C18 26 34 18 50 18s32 8 32 34v30H18z" fill="#c9742f"/>',f:'<path d="M24 44C28 30 40 26 50 26s22 4 26 18q-14-8-26-8t-26 8z" fill="#c9742f"/>'},
 {id:'h3',k:'ha',n:'Iroquois',p:25,f:'<path d="M42 27L44 8 48 20 52 6 56 20 60 8 58 27z" fill="#2b9d6e"/>'},
 {id:'h4',k:'ha',n:'Afro',p:35,b:'<circle cx="50" cy="40" r="36" fill="#2a1d14"/>'},
+{id:'h5',k:'ha',n:'Long blond',p:30,b:'<path d="M18 52C18 26 34 18 50 18s32 8 32 34v30H18z" fill="#f2c94c"/>',f:'<path d="M24 44C28 30 40 26 50 26s22 4 26 18q-14-8-26-8t-26 8z" fill="#f2c94c"/>'},
 {id:'g0',k:'gl',n:'Aucune',p:0},
 {id:'g1',k:'gl',n:'Rondes',p:15,s:'<g fill="none" stroke="#222" stroke-width="2.5"><circle cx="39" cy="48" r="9"/><circle cx="61" cy="48" r="9"/><path d="M48 48h4"/></g>'},
 {id:'g2',k:'gl',n:'Carrées',p:20,s:'<g fill="none" stroke="#222" stroke-width="2.5"><rect x="29" y="40" width="20" height="16" rx="3"/><rect x="51" y="40" width="20" height="16" rx="3"/><path d="M49 47h2"/></g>'},
 {id:'g3',k:'gl',n:'Soleil',p:30,s:'<rect x="29" y="41" width="20" height="14" rx="4" fill="#111"/><rect x="51" y="41" width="20" height="14" rx="4" fill="#111"/><path d="M49 46h2" stroke="#111" stroke-width="2"/>'},
+{id:'g4',k:'gl',n:'Noires rondes',p:25,s:'<g fill="#111" stroke="#111" stroke-width="2.5"><circle cx="39" cy="48" r="9"/><circle cx="61" cy="48" r="9"/><path d="M48 47h4" fill="none"/></g>'},
 {id:'t0',k:'ht',n:'Aucun',p:0},
 {id:'t1',k:'ht',n:'Casquette',p:20,s:'<path d="M22 36a28 24 0 0 1 56 0z" fill="#2b4fd6"/><path d="M60 36h28a6 4 0 0 1-6 5H60z" fill="#1c2e8f"/>'},
 {id:'t2',k:'ht',n:'Bonnet',p:25,s:'<path d="M22 36a28 26 0 0 1 56 0z" fill="#e5484d"/><rect x="20" y="33" width="60" height="8" rx="4" fill="#fff"/><circle cx="50" cy="12" r="5" fill="#fff"/>'},
@@ -155,13 +157,20 @@ const ITEMS=[
 {id:'b3',k:'bg',n:'Rose',p:10,s:'<rect width="100" height="100" fill="#ffc9dc"/>'},
 {id:'b4',k:'bg',n:'Quadrillé',p:20,s:'<rect width="100" height="100" fill="#f7f8fc"/><path d="M20 0V100M40 0V100M60 0V100M80 0V100M0 20H100M0 40H100M0 60H100M0 80H100" stroke="#c9d1f0"/>'},
 {id:'b5',k:'bg',n:'Soleil',p:20,s:'<rect width="100" height="100" fill="#ffd9a0"/><circle cx="82" cy="18" r="10" fill="#ffb347"/>'},
-{id:'b6',k:'bg',n:'Nuit',p:30,s:'<rect width="100" height="100" fill="#1c2340"/><g fill="#ffd93b"><circle cx="15" cy="18" r="1.8"/><circle cx="80" cy="14" r="2.2"/><circle cx="88" cy="40" r="1.5"/><circle cx="12" cy="60" r="1.5"/></g>'}];
+{id:'b6',k:'bg',n:'Nuit',p:30,s:'<rect width="100" height="100" fill="#1c2340"/><g fill="#ffd93b"><circle cx="15" cy="18" r="1.8"/><circle cx="80" cy="14" r="2.2"/><circle cx="88" cy="40" r="1.5"/><circle cx="12" cy="60" r="1.5"/></g>'},
+{id:'b7',k:'bg',n:'Océan',p:25,s:'<rect width="100" height="100" fill="#8fd3f4"/><circle cx="84" cy="16" r="8" fill="#ffe27a"/><rect y="58" width="100" height="42" fill="#2b7fd1"/><path d="M0 64q12-8 25 0t25 0t25 0t25 0V100H0z" fill="#1f63b5"/><path d="M0 78q12-6 25 0t25 0t25 0t25 0" stroke="#8fd3f4" stroke-width="2" fill="none"/>'}];
 function avatar(av,sz){const it=k=>ITEMS.find(i=>i.id===av[k])||{};
   return `<svg class="av" width="${sz}" height="${sz}" viewBox="0 0 100 100" aria-hidden="true">${it('bg').s||''}${it('ha').b||''}<circle cx="50" cy="54" r="30" fill="#ffd9b3"/><path d="M50 52v8h-5" stroke="#b9774a" stroke-width="2.5" fill="none" stroke-linecap="round"/>${it('ey').s||''}${it('mo').s||''}${it('ha').f||''}${it('gl').s||''}${it('ht').s||''}</svg>`}
-let sh='mo';const SL=[['mo','Bouche'],['ey','Yeux'],['ha','Cheveux'],['gl','Lunettes'],['ht','Chapeau'],['bg','Fond']];
+let pmsg='',sh='mo';const SL=[['mo','Bouche'],['ey','Yeux'],['ha','Cheveux'],['gl','Lunettes'],['ht','Chapeau'],['bg','Fond']];
 function shop(k){if(k)sh=k;const g=G();R(`<div class="row"><h2>Avatar</h2><span class="rub">${rb()} ${g.ru}</span></div><div class="row"><button class="btn alt" onclick="home()">← Retour</button><button class="btn alt" onclick="succ()">Succès</button></div>
 <div class="card" style="display:flex;justify-content:center">${avatar(g.av,120)}</div><div class="tabs">${SL.map(([c,n])=>`<button class="btn ${c===sh?'':'alt'}" onclick="shop('${c}')">${n}</button>`).join('')}</div>
+<div class="card"><b>Code promo</b><div class="row" style="margin-top:6px"><input id="pc" placeholder="Ton code" autocomplete="off" style="margin:0"><button class="btn" style="margin:0 0 0 8px" onclick="promo()">Valider</button></div><p class="mut">${pmsg}</p></div>
 <div class="grid">${ITEMS.filter(i=>i.k===sh).map(i=>{const own=!i.p||g.own.includes(i.id),eq=g.av[sh]===i.id;return `<button class="item ${eq?'eq':''}" onclick="buy('${i.id}')" ${!own&&g.ru<i.p?'disabled':''}>${avatar({...g.av,[sh]:i.id},56)}<b>${i.n}</b><span>${eq?'Équipé':own?'Équiper':i.p+' '+rb()}</span></button>`}).join('')}</div>`)}
+async function promo(){const v=document.getElementById('pc').value.trim().toUpperCase();if(!v)return;const g=G(),h=await sha(v);let C={};
+  try{C=await (await fetch('content/codes.json')).json()}catch{}
+  if(!C[h])pmsg='Code invalide.';else if((g.codes||[]).includes(h))pmsg='Code déjà utilisé sur ton compte.';
+  else{g.codes=(g.codes||[]).concat(h);g.ru+=C[h];save();bar();pmsg='Code accepté : +'+C[h]+' ◆'}
+  shop()}
 function buy(id){const g=G(),i=ITEMS.find(x=>x.id===id);if(i.p&&!g.own.includes(id)){if(g.ru<i.p)return;g.ru-=i.p;g.own.push(id)}g.av[i.k]=id;save();bar();shop()}
 // ---- Consultation
 let ci=0,cl=[],flipped=false;
@@ -208,6 +217,6 @@ async function board(k){k=k||'xp';
   rows.sort((a,b)=>(b[k]??-1)-(a[k]??-1));const md=['🥇','🥈','🥉'];
   R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Classement</h2><p class="mut">Le tri « Flash cards » utilise la moyenne des % de validation des decks (non affichée).</p>
 <div class="card lbx"><div class="lbg lbh"><span></span><span>Joueur</span>${SORTS.map(([c,n])=>`<button class="sorth ${c===k?'on':''}" onclick="board('${c}')">${n} ▼</button>`).join('')}</div>
-${rows.map((r,i)=>`<div class="lbg lbr ${r.pseudo===P.pseudo?'me':''}"><span class="rk">${md[i]||i+1}</span><span class="who">${avatar(r.av,32)}<b>${esc(r.pseudo)}</b></span><span class="dks">${r.dk.map((v,j)=>`<span class="sc" style="background:${col(v)}">${esc(packs[j].court||packs[j].titre)} ${v}%</span>`).join('')}</span><span>${r.ds==null?'—':`<span class="sc" style="background:${col(r.ds)}">${r.ds}%</span>`}</span><b>${r.xp}</b></div>`).join('')||'<p>Personne pour l\'instant.</p>'}</div>`)}
+${rows.map((r,i)=>`<div class="lbg lbr ${r.pseudo===P.pseudo?'me':''}"><span class="rk">${md[i]||i+1}</span><span class="who">${avatar(r.av,32)}<b>${esc(r.pseudo)}</b></span><span class="dks">${r.dk.map((v,j)=>`<span class="sc" style="background:${col(v)}">${esc(packs[j].court||packs[j].titre)} ${v}%</span>`).join('')}</span><span>${r.ds==null?'—':`<span class="sc" style="background:${col(r.ds)}">${r.ds}%</span>`}</span><b>${r.xp}</b></div>`).join('')||'<p>Personne pour l\'instant.</p>'}</div>`,1)}
 boot();
 </script></body></html>

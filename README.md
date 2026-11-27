@@ -17,3 +17,6 @@ Dépose un fichier dans `content/` et ajoute son nom dans `content/index.json`.
 ## Limites de cette v1
 - Le PIN (haché) et le score sont lisibles et modifiables par un joueur technique : OK entre élèves, pas pour un concours.
 - Supabase gratuit met le projet en pause après ~7 jours sans activité (reprise en un clic dans le tableau de bord).
+
+## Codes promo (rubis)
+Les codes sont dans `content/codes.json` sous forme de **hachés** (le code lui-même n'est pas lisible) : `{"<hash du code>": nombre_de_rubis}`. Pour en créer un, ouvre le jeu, ouvre la console du navigateur (F12) et tape `await sha('MONCODE')` (en MAJUSCULES) ; copie le résultat dans `codes.json`. Un code ne peut être utilisé qu'une fois par compte. Code existant : KERLAN (50 rubis).
