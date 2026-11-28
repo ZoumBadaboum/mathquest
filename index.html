@@ -38,7 +38,7 @@ body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);bac
 .dks{display:flex;gap:4px}.dks .sc{font-size:.72rem;padding:1px 6px}
 .sorth{font:inherit;font-weight:700;background:none;border:0;color:var(--ink);cursor:pointer;padding:4px;border-radius:6px;text-align:left}.sorth.on{background:var(--hl);color:#1c2340}
 .rt{display:flex;align-items:center;gap:8px}.rt .btn{margin:0}.promo{width:120px;margin:0;font-size:.8rem;padding:6px 8px;border-width:1px;text-transform:uppercase}.promo::placeholder{color:var(--mut)}
-.qb{background:#ff5a1f;color:#fff}.qb .mut{color:#fff;opacity:.92}.qb .btn{background:#fff;color:#c43c00}
+.qb{background:linear-gradient(135deg,#ff5a1f,#ff2e63);color:#fff}.qbt{display:block;font-size:1.55rem;font-weight:800;letter-spacing:.5px;line-height:1.1}.qbs{display:block;font-size:.95rem;font-weight:600;opacity:.95;margin-top:2px}.qb .btn.qbgo{font-size:1.05rem;padding:12px 6px}.qb .mut{color:#fff;opacity:.92}.qb .btn{background:#fff;color:#c43c00}
 .ex table,.opt table{border-collapse:collapse;display:block;overflow-x:auto}.ex th,.ex td,.opt th,.opt td{border:1px solid var(--grid);padding:4px 8px;text-align:center}
 .ex blockquote{border-left:4px dashed var(--blue);margin:8px 0;padding:2px 12px;color:var(--mut)}.ex pre{overflow-x:auto;background:var(--bg);padding:8px;border-radius:8px}.ex h5{margin:14px 0 4px}.qs{font-size:1.05rem;margin:6px 0 12px}
 .corr{margin:10px 0}.cb{background:var(--grid);border-radius:10px;padding:4px 12px;margin-top:8px}
@@ -70,7 +70,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
-const VERSION='1.9 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
+const VERSION='1.9.1 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -192,7 +192,7 @@ const qchs=()=>{const m={};QCM.forEach(q=>q.ch.forEach(c=>m[c]=(m[c]||0)+1));ret
 const qpref=()=>{const x=X();return x.q||(x.q={ch:Object.keys(qchs())})};
 function qbStats(){const L=X().qh;if(!L.length)return '<div class="mut" style="margin:4px 0">Pas encore de série</div>';const best=Math.max(...L.map(e=>e.s)),l5=L.slice(-5),avg=Math.round(l5.reduce((a,e)=>a+e.s,0)/l5.length);
   return `<div class="sts"><div><span class="mut">Meilleur</span><span class="sc" style="background:${col(best)}">${best}%</span></div><div><span class="mut">Moy. ${l5.length>1?l5.length+' derniers':'dernier'}</span><span class="sc" style="background:${col(avg)}">${avg}%</span></div></div>`}
-const qbCard=()=>`<div class="card ch qb"><b class="t">QCM Bac</b><div class="mut">${QCM.length} questions des annales 2026</div><div class="st">${qbStats()}</div><div class="acts"><button class="btn" onclick="qbSetup()">Jouer</button></div></div>`;
+const qbCard=()=>`<div class="card ch qb"><div><span class="qbt">QCM BAC</span><span class="qbs">Annales 2026</span></div><div class="mut">${QCM.length} questions · choisis tes chapitres</div><div class="st">${qbStats()}</div><div class="acts"><button class="btn qbgo" onclick="qbSetup()">S'entraîner →</button></div></div>`;
 function qbPref(init){const pf=qpref(),els=[...document.querySelectorAll('.qc')];if(!init&&els.length)pf.ch=els.filter(e=>e.checked).map(e=>e.value);
   const n=QCM.filter(q=>q.ch.some(c=>pf.ch.includes(c))).length,m=qchs(),m2=document.getElementById('q2');
   document.getElementById('qn').textContent=n+' question'+(n>1?'s':'')+' disponible'+(n>1?'s':'');document.getElementById('qgo').disabled=!n;if(m2)m2.checked=N2CH.filter(c=>m[c]).every(c=>pf.ch.includes(c));if(!init)save()}
@@ -201,7 +201,7 @@ function qbSetup(){const m=qchs(),pf=qpref(),g2=N2CH.filter(c=>m[c]),g1=[...new 
   const box=c=>`<label class="chk${m[c]?'':' off'}"><input type="checkbox" class="qc" value="${esc(c)}" ${pf.ch.includes(c)?'checked':''} ${m[c]?'':'disabled'} onchange="qbPref()"> ${c} <span class="mut">(${m[c]||0})</span></label>`;
   R(`<button class="btn alt" onclick="home()">← Retour</button><h2>QCM Bac</h2><p class="mut">Questions des annales 2026. Coche les chapitres à réviser, tes choix sont mémorisés.</p>${qbStats()}
 <div class="card"><label class="chk"><input type="checkbox" id="q2" onchange="qb2(this.checked)"> <b>Niveau 2nde</b> <span class="mut">(tous les chapitres de 2nde)</span></label>${g2.map(box).join('')}</div>
-<div class="card"><b>Première</b>${g1.map(box).join('')}</div><div class="row"><span class="mut" id="qn"></span><button class="btn" id="qgo" onclick="qbStart()">Lancer une série de 10</button></div>`);qbPref(1)}
+<div class="card"><b>Première</b>${g1.map(box).join('')}<p class="mut" style="margin:8px 0 0">Seules ${QCM.filter(q=>q.ch.some(c=>!N2CH.includes(c))).length} questions des annales touchent la Première (dont ${QCM.filter(q=>!q.n2).length} vraiment hors niveau 2nde) : le gros de la Première se travaille dans les exos.</p></div><div class="row"><span class="mut" id="qn"></span><button class="btn" id="qgo" onclick="qbStart()">Lancer une série de 10</button></div>`);qbPref(1)}
 function qbStart(){const pf=qpref(),qs=X().qs,rk=q=>q.id in qs?(qs[q.id]?2:1):0,pool=QCM.filter(q=>q.ch.some(c=>pf.ch.includes(c)));if(!pool.length)return;
   QB={Q:shuf(pool).sort((a,b)=>rk(a)-rk(b)).slice(0,10),i:0,good:0,xp:0,combo:0,done:false};qbView()}
 function qbView(){const q=QB.Q[QB.i];QB.done=false;
