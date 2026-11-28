@@ -20,3 +20,13 @@ Dépose un fichier dans `content/` et ajoute son nom dans `content/index.json`.
 
 ## Codes promo (rubis)
 Les codes sont dans `content/codes.json` sous forme de **hachés** (le code lui-même n'est pas lisible) : `{"<hash du code>": nombre_de_rubis}`. Pour en créer un, ouvre le jeu, ouvre la console du navigateur (F12) et tape `await sha('MONCODE')` (en MAJUSCULES) ; copie le résultat dans `codes.json`. Un code ne peut être utilisé qu'une fois par compte. Code existant : KERLAN (50 rubis).
+
+## QCM Bac et Exos types bac (annales)
+`content/qcm_bac.json` (QCM) et `content/exos_bac.json` (exercices + corrections) sont **générés** à partir des annales en markdown :
+
+```bash
+pip install mistune
+python tools/convert_annales.py annales_partie1.md annales_partie2.md
+```
+Le script lit les balises `2nde`, `Chapitre : …`, `Région : …`, les ✅ des QCM et les blocs `> **Correction.**` des exercices. Relance-le quand tu changes les annales, puis pousse les deux JSON.
+Réglages dans `index.html` : `N2CH` = chapitres rangés sous « Niveau 2nde » dans le QCM Bac ; `ALIAS` = chapitres fusionnés (ex. « Probabilités » → « Probabilités conditionnelles »).

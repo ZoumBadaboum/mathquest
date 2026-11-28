@@ -38,6 +38,16 @@ body{font-family:'Bricolage Grotesque',system-ui,sans-serif;color:var(--ink);bac
 .dks{display:flex;gap:4px}.dks .sc{font-size:.72rem;padding:1px 6px}
 .sorth{font:inherit;font-weight:700;background:none;border:0;color:var(--ink);cursor:pointer;padding:4px;border-radius:6px;text-align:left}.sorth.on{background:var(--hl);color:#1c2340}
 .rt{display:flex;align-items:center;gap:8px}.rt .btn{margin:0}.promo{width:120px;margin:0;font-size:.8rem;padding:6px 8px;border-width:1px;text-transform:uppercase}.promo::placeholder{color:var(--mut)}
+.qb{background:#ff5a1f;color:#fff}.qb .mut{color:#fff;opacity:.92}.qb .btn{background:#fff;color:#c43c00}
+.ex table,.opt table{border-collapse:collapse;display:block;overflow-x:auto}.ex th,.ex td,.opt th,.opt td{border:1px solid var(--grid);padding:4px 8px;text-align:center}
+.ex blockquote{border-left:4px dashed var(--blue);margin:8px 0;padding:2px 12px;color:var(--mut)}.ex pre{overflow-x:auto;background:var(--bg);padding:8px;border-radius:8px}.ex h5{margin:14px 0 4px}.qs{font-size:1.05rem;margin:6px 0 12px}
+.corr{margin:10px 0}.cb{background:var(--grid);border-radius:10px;padding:4px 12px;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}.chips i{font-style:normal;font-size:.72rem;background:var(--grid);padding:1px 7px;border-radius:10px}
+.xrow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;width:100%;text-align:left;font:inherit;color:var(--ink);background:none;border:0;border-top:1px solid var(--grid);padding:10px 4px;cursor:pointer}
+.xrow:first-child{border-top:0}.xrow:hover,.xrow:focus-visible{background:var(--hl);color:#1c2340;outline:0}.xt{display:flex;flex-direction:column;gap:2px;min-width:0}.xr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xs{font-size:.78rem;font-weight:700;white-space:nowrap;padding:2px 8px;border-radius:8px;border:2px solid var(--ink)}.s0{background:#e5484d;color:#fff}.s1{background:#f5a524;color:#1c2340}.s2{background:#1f9d55;color:#fff}
+select{font:inherit;width:100%;padding:10px;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:8px}
+.chk{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer}.chk.off{opacity:.5}input[type=checkbox]{width:20px;height:20px;padding:0;margin:0;accent-color:var(--blue)}
 .lock{opacity:.55;border-style:dashed;box-shadow:none;text-align:center}
 footer{margin:28px 0 8px;text-align:center;font-size:.8rem;color:var(--mut)}.lnk{font:inherit;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer}
 h1{font-size:2.2rem;font-weight:800;margin:.2em 0}h2{margin:.6em 0 .3em}
@@ -60,7 +70,7 @@ td,th{padding:6px;text-align:left}table{width:100%;border-collapse:collapse}tr.m
 // ====== À REMPLIR : Supabase > Project Settings > API ======
 const SB={url:"https://djgbptxrgzjmvozilpou.supabase.co",key:"sb_publishable_n0T6saUF3tmygA3u2a-1OQ_6G-imFxD"}; // ex: url:"https://xxxx.supabase.co", key:"clé anon public"
 // ===========================================================
-const VERSION='1.8.2 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
+const VERSION='1.9 · 27/11/2026',MASTER=3; // MASTER = niveau de boîte à atteindre pour qu'une carte soit maîtrisée
 const A=document.getElementById('app'),day=()=>Math.floor(Date.now()/864e5);
 const wk=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)};
 const lvl=x=>Math.floor(Math.sqrt(x/50))+1,need=l=>50*(l-1)*(l-1);
@@ -69,7 +79,7 @@ const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1
 const norm=s=>s.toLowerCase().replace(/\s|\\/g,'').replace(/π/g,'pi').replace(/[−–]/g,'-').replace(/²/g,'^2').replace(/[×·]/g,'*').replace(/δ/g,'delta');
 const esc=s=>s.replace(/[<>&"]/g,'');
 const R=(h,w)=>{A.className=w?'':'n';A.innerHTML=h;renderMathInElement(A,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})};
-let nm=0,ev=false,P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
+let QCM=[],EXOS=[],xfil='',QB={},nm=0,ev=false,P=null,packs=[],ALL=[],Q=[],qi=0,combo=0,gained=0,good=0,cur=null;
 
 async function api(path,m='GET',b,h={}){const r=await fetch(SB.url+'/rest/v1/'+path,{method:m,body:b&&JSON.stringify(b),headers:{apikey:SB.key,...(SB.key.startsWith('eyJ')?{Authorization:'Bearer '+SB.key}:{}),'Content-Type':'application/json',...h}});if(!r.ok)throw new Error(r.status+' '+await r.text());return r.status===204?null:r.json().catch(()=>null)}
 async function save(){try{if(SB.url)await api('joueurs','POST',P,{Prefer:'resolution=merge-duplicates'});else localStorage['p_'+P.pseudo]=JSON.stringify(P)}catch{}}
@@ -77,6 +87,8 @@ async function save(){try{if(SB.url)await api('joueurs','POST',P,{Prefer:'resolu
 async function boot(){
   try{const idx=await (await fetch('content/index.json')).json();packs=await Promise.all(idx.map(f=>fetch('content/'+f).then(r=>r.json())))}catch{A.textContent='Contenu introuvable (content/index.json).';return}
   ALL=packs.flatMap(p=>p.cartes.map(c=>({...c,ch:p.id,id:p.id+':'+c.id})));
+  [QCM,EXOS]=await Promise.all(['qcm_bac.json','exos_bac.json'].map(f=>fetch('content/'+f).then(r=>r.ok?r.json():[]).catch(()=>[])));
+  [QCM,EXOS].forEach(L=>L.forEach(q=>q.ch=[...new Set(q.ch.map(c=>ALIAS[c]||c))]));
   const me=JSON.parse(localStorage.me||'null');
   if(me&&await login(me.pseudo,me.pin,true))return;
   loginView();
@@ -103,9 +115,9 @@ function home(){touchDay();bar();const due=ALL.filter(c=>!P.progression[c.id]||P
   const S=P.progression._s,sv=S?`<div class="card"><b>Séance en cours</b> <span class="mut">${S.ev?'éval':'révision'} · ${Math.min(S.qi,S.ids.length)}/${S.ids.length}</span><br><button class="btn" onclick="resume()">Reprendre</button><button class="btn alt" onclick="delete P.progression._s;save();home()">Abandonner</button></div>`:'';
   R(`${sv}<div class="card"><span class="mut">${P.xp} XP</span>${stats('all')}</div>
   <div class="row"><h2>Flash cards</h2>${due?`<button class="btn" onclick="rev('all')">Révision du jour · ${due} à revoir</button>`:''}</div>
-  <div class="hs">${packs.map(p=>{const n=p.cartes.length;return `<div class="card ch"><b class="t">${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} maîtrisées</div><div class="pr"><div class="bar"><i style="width:${prog(p.id)}%"></i></div><span>${prog(p.id)} %</span></div><div class="st">${stats(p.id)||'<div class="mut">Pas encore d\'éval</div>'}</div><div class="acts"><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div></div>`}).join('')}</div>
+  <div class="hs">${QCM.length?qbCard():''}${packs.map(p=>{const n=p.cartes.length;return `<div class="card ch"><b class="t">${p.titre}</b><div class="mut">${p.niveau} · ${mastered(p.id)}/${n} maîtrisées</div><div class="pr"><div class="bar"><i style="width:${prog(p.id)}%"></i></div><span>${prog(p.id)} %</span></div><div class="st">${stats(p.id)||'<div class="mut">Pas encore d\'éval</div>'}</div><div class="acts"><button class="btn alt" onclick="consult('${p.id}')">Consulter</button><button class="btn" onclick="rev('${p.id}')">Réviser</button><button class="btn alt" onclick="evalStart('${p.id}')">Éval</button></div></div>`}).join('')}</div>
   <h2>Exo express</h2><div class="card lock">🔒 Section à venir</div>
-  <h2>Exos types bac</h2><div class="card lock">🔒 Section à venir</div>
+  <h2 id="xs">Exos types bac</h2>${exoSection()}
   <footer>MathQuest v${VERSION} · <button class="lnk" onclick="legal()">Crédits et mentions légales</button></footer>`,1)}
 function legal(){R(`<button class="btn alt" onclick="home()">← Retour</button><h2>Crédits et mentions légales</h2><div class="card"><p><b>Éditeur :</b> ZoumB</p><p><b>Contenu des cours :</b> Merci à M. K pour les cours</p><p><b>Hébergement du site :</b> GitHub Pages (GitHub, Inc., San Francisco, États-Unis). <b>Base de données :</b> Supabase.</p><p><b>Données collectées :</b> uniquement ton pseudo, ton PIN (stocké haché), ton XP, tes scores et ta progression. Aucun nom, e-mail ni cookie publicitaire. Ton pseudo est mémorisé dans le stockage local de ton navigateur pour te reconnecter. N'utilise pas ton vrai nom.</p><p><b>Suppression :</b> pour effacer ton compte, contacte l'éditeur.</p></div>`)}
 // ---- Succès, rubis, avatar, boutique (données dans progression._g)
@@ -172,6 +184,49 @@ async function promo(){const v=document.getElementById('pc').value.trim().toUppe
   else{g.codes=(g.codes||[]).concat(h);g.ru+=C[h];save();bar();pmsg='Code accepté : +'+C[h]+' ◆'}
   shop()}
 function buy(id){const g=G(),i=ITEMS.find(x=>x.id===id);if(i.p&&!g.own.includes(id)){if(g.ru<i.p)return;g.ru-=i.p;g.own.push(id)}g.av[i.k]=id;save();bar();shop()}
+// ---- QCM Bac et Exos types bac (annales 2026) ; données du joueur dans progression._x
+const N2CH=['Calcul numérique','Pourcentages et proportions','Puissances','Calcul littéral et formules','Équations et inéquations',"Signe d'une expression",'Fonctions et courbes','Droites et fonctions affines','Statistiques'],ALIAS={'Probabilités':'Probabilités conditionnelles'};
+const X=()=>P.progression._x||(P.progression._x={q:null,qs:{},qh:[],ex:{}});
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},dfr=d=>d.split('-').reverse().join('/');
+const qchs=()=>{const m={};QCM.forEach(q=>q.ch.forEach(c=>m[c]=(m[c]||0)+1));return m};
+const qpref=()=>{const x=X();return x.q||(x.q={ch:Object.keys(qchs())})};
+function qbStats(){const L=X().qh;if(!L.length)return '<div class="mut" style="margin:4px 0">Pas encore de série</div>';const best=Math.max(...L.map(e=>e.s)),l5=L.slice(-5),avg=Math.round(l5.reduce((a,e)=>a+e.s,0)/l5.length);
+  return `<div class="sts"><div><span class="mut">Meilleur</span><span class="sc" style="background:${col(best)}">${best}%</span></div><div><span class="mut">Moy. ${l5.length>1?l5.length+' derniers':'dernier'}</span><span class="sc" style="background:${col(avg)}">${avg}%</span></div></div>`}
+const qbCard=()=>`<div class="card ch qb"><b class="t">QCM Bac</b><div class="mut">${QCM.length} questions des annales 2026</div><div class="st">${qbStats()}</div><div class="acts"><button class="btn" onclick="qbSetup()">Jouer</button></div></div>`;
+function qbPref(init){const pf=qpref(),els=[...document.querySelectorAll('.qc')];if(!init&&els.length)pf.ch=els.filter(e=>e.checked).map(e=>e.value);
+  const n=QCM.filter(q=>q.ch.some(c=>pf.ch.includes(c))).length,m=qchs(),m2=document.getElementById('q2');
+  document.getElementById('qn').textContent=n+' question'+(n>1?'s':'')+' disponible'+(n>1?'s':'');document.getElementById('qgo').disabled=!n;if(m2)m2.checked=N2CH.filter(c=>m[c]).every(c=>pf.ch.includes(c));if(!init)save()}
+function qb2(v){document.querySelectorAll('.qc').forEach(e=>{if(N2CH.includes(e.value))e.checked=v});qbPref()}
+function qbSetup(){const m=qchs(),pf=qpref(),g2=N2CH.filter(c=>m[c]),g1=[...new Set([...Object.keys(m).filter(c=>!N2CH.includes(c)),'Trigonométrie'])];
+  const box=c=>`<label class="chk${m[c]?'':' off'}"><input type="checkbox" class="qc" value="${esc(c)}" ${pf.ch.includes(c)?'checked':''} ${m[c]?'':'disabled'} onchange="qbPref()"> ${c} <span class="mut">(${m[c]||0})</span></label>`;
+  R(`<button class="btn alt" onclick="home()">← Retour</button><h2>QCM Bac</h2><p class="mut">Questions des annales 2026. Coche les chapitres à réviser, tes choix sont mémorisés.</p>${qbStats()}
+<div class="card"><label class="chk"><input type="checkbox" id="q2" onchange="qb2(this.checked)"> <b>Niveau 2nde</b> <span class="mut">(tous les chapitres de 2nde)</span></label>${g2.map(box).join('')}</div>
+<div class="card"><b>Première</b>${g1.map(box).join('')}</div><div class="row"><span class="mut" id="qn"></span><button class="btn" id="qgo" onclick="qbStart()">Lancer une série de 10</button></div>`);qbPref(1)}
+function qbStart(){const pf=qpref(),qs=X().qs,rk=q=>q.id in qs?(qs[q.id]?2:1):0,pool=QCM.filter(q=>q.ch.some(c=>pf.ch.includes(c)));if(!pool.length)return;
+  QB={Q:shuf(pool).sort((a,b)=>rk(a)-rk(b)).slice(0,10),i:0,good:0,xp:0,combo:0,done:false};qbView()}
+function qbView(){const q=QB.Q[QB.i];QB.done=false;
+  R(`<div class="row"><button class="btn alt" onclick="home()">Quitter</button><span class="mut">${QB.i+1}/${QB.Q.length} · série ×${Math.min(2,1+.1*QB.combo).toFixed(1)}</span></div><div class="card pop ex"><div class="mut">${q.reg} · Question ${q.n}</div><div class="qs">${q.q}</div>${q.o.map((o,j)=>`<div class="opt" role="button" tabindex="0" onclick="qbPick(${j})"><b>${'ABCD'[j]}.</b> ${o}</div>`).join('')}</div><div id="fb"></div>`)}
+function qbPick(j){if(QB.done)return;QB.done=true;const q=QB.Q[QB.i],ok=j===q.ok;
+  document.querySelectorAll('.opt').forEach((b,k)=>{if(k===q.ok)b.classList.add('ok');else if(k===j)b.classList.add('ko')});
+  let xp=2;if(ok){QB.combo++;QB.good++;xp=Math.round(15*Math.min(2,1+.1*(QB.combo-1)))}else QB.combo=0;
+  const g=G();g.s.rv++;g.s.mc=Math.max(g.s.mc,QB.combo);X().qs[q.id]=ok?1:0;P.xp+=xp;P.xp_semaine+=xp;QB.xp+=xp;save();bar();
+  document.getElementById('fb').innerHTML=`<div class="card pop"><b class="${ok?'':'err'}">${ok?'Juste !':'Pas tout à fait.'}</b> <span class="hl">+${xp} XP</span><br><button class="btn" onclick="qbNext()">${QB.i+1<QB.Q.length?'Suivant':'Voir mon score'}</button></div>`}
+function qbNext(){QB.i++;QB.i<QB.Q.length?qbView():qbEnd()}
+function qbEnd(){const pc=Math.round(QB.good/QB.Q.length*100),x=X();x.qh.push({s:pc,t:Date.now()});if(x.qh.length>30)x.qh.shift();save();
+  R(`<h1>Série terminée</h1><div class="card pop"><p><span class="sc" style="background:${col(pc)}">${pc}%</span> ${QB.good}/${QB.Q.length} · <span class="hl">+${QB.xp} XP</span></p>${qbStats()}<button class="btn" onclick="qbStart()">Rejouer</button><button class="btn alt" onclick="qbSetup()">Chapitres</button><button class="btn alt" onclick="home()">Accueil</button></div>`)}
+// exos
+function exoRows(){const ex=X().ex;return EXOS.filter(e=>!xfil||e.ch.includes(xfil)).map(e=>{const r=ex[e.id],st=r?`<span class="xs s${r.n}">${['Pas réussi','Presque','Réussi'][r.n]} · ${dfr(r.d)}</span>`:'<span class="xs">À faire</span>';
+  return `<button class="xrow" onclick="exo('${e.id}')"><span class="xt"><span><b>${e.reg} · Exo ${e.n}</b> <span class="mut">${e.pts} pts</span></span><span class="mut xr">${e.r}</span><span class="chips">${e.ch.map(c=>`<i>${c}</i>`).join('')}</span></span>${st}</button>`}).join('')||'<div class="mut">Aucun exercice pour ce chapitre.</div>'}
+function xf(v){xfil=v;const el=document.getElementById('xl');el.innerHTML=exoRows();renderMathInElement(el,{delimiters:[{left:'$',right:'$',display:false}],throwOnError:false})}
+function exoSection(){if(!EXOS.length)return '<div class="card lock">🔒 Section à venir</div>';const m={};EXOS.forEach(e=>e.ch.forEach(c=>m[c]=(m[c]||0)+1));
+  return `<div class="card"><select id="xsel" aria-label="Filtrer par chapitre" onchange="xf(this.value)"><option value="">Tous les chapitres (${EXOS.length})</option>${Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<option value="${esc(c)}" ${c===xfil?'selected':''}>${c} (${n})</option>`).join('')}</select><div id="xl">${exoRows()}</div></div>`}
+const xback=()=>{home();document.getElementById('xs')?.scrollIntoView?.()};
+function tc(b){const c=b.nextElementSibling;c.hidden=!c.hidden;b.textContent=c.hidden?'Voir la correction':'Masquer la correction'}
+function exo(id){const e=EXOS.find(x=>x.id===id),r=X().ex[id];
+  R(`<div class="row"><button class="btn alt" onclick="xback()">← Retour</button><span class="mut">${e.pts} pts</span></div><h2>${e.reg} · Exercice ${e.n}</h2><div class="chips">${e.ch.map(c=>`<i>${c}</i>`).join('')}</div>${r?`<p class="mut">Dernière fois : ${dfr(r.d)} (${['pas réussi','presque réussi','réussi'][r.n]})</p>`:''}<div class="card ex">${e.h}</div>
+<div class="card"><b>Comment ça s'est passé ?</b><p class="mut">Cherche sur papier, regarde les corrections, puis note-toi.</p><div class="acts"><button class="btn alt" onclick="rate('${id}',0)">Pas réussi</button><button class="btn alt" onclick="rate('${id}',1)">Presque</button><button class="btn" onclick="rate('${id}',2)">Réussi</button></div></div>`)}
+function rate(id,n){const x=X(),r=x.ex[id],W=[10,25,50],prev=r?(r.h||[r]).reduce((a,b)=>Math.max(a,b.n),-1):-1,xp=n>prev?W[n]-(prev>=0?W[prev]:0):0,d=today();
+  x.ex[id]={d,n,h:[...(r?(r.h||[r]):[]),{d,n}].slice(-10)};P.xp+=xp;P.xp_semaine+=xp;save();bar();xback()}
 // ---- Consultation
 let ci=0,cl=[],flipped=false;
 function consult(ch){cl=ALL.filter(c=>c.ch===ch);ci=0;flipped=false;cview()}
