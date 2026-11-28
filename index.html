@@ -197,7 +197,7 @@ function qbPref(init){const pf=qpref(),els=[...document.querySelectorAll('.qc')]
   const n=QCM.filter(q=>q.ch.some(c=>pf.ch.includes(c))).length,m=qchs(),m2=document.getElementById('q2');
   document.getElementById('qn').textContent=n+' question'+(n>1?'s':'')+' disponible'+(n>1?'s':'');document.getElementById('qgo').disabled=!n;if(m2)m2.checked=N2CH.filter(c=>m[c]).every(c=>pf.ch.includes(c));if(!init)save()}
 function qb2(v){document.querySelectorAll('.qc').forEach(e=>{if(N2CH.includes(e.value))e.checked=v});qbPref()}
-function qbSetup(){const m=qchs(),pf=qpref(),g2=N2CH.filter(c=>m[c]),g1=[...new Set([...Object.keys(m).filter(c=>!N2CH.includes(c)),'Trigonométrie'])];
+function qbSetup(){const m=qchs(),pf=qpref(),g2=N2CH.filter(c=>m[c]),g1=Object.keys(m).filter(c=>!N2CH.includes(c));
   const box=c=>`<label class="chk${m[c]?'':' off'}"><input type="checkbox" class="qc" value="${esc(c)}" ${pf.ch.includes(c)?'checked':''} ${m[c]?'':'disabled'} onchange="qbPref()"> ${c} <span class="mut">(${m[c]||0})</span></label>`;
   R(`<button class="btn alt" onclick="home()">← Retour</button><h2>QCM Bac</h2><p class="mut">Questions des annales 2026. Coche les chapitres à réviser, tes choix sont mémorisés.</p>${qbStats()}
 <div class="card"><label class="chk"><input type="checkbox" id="q2" onchange="qb2(this.checked)"> <b>Niveau 2nde</b> <span class="mut">(tous les chapitres de 2nde)</span></label>${g2.map(box).join('')}</div>
